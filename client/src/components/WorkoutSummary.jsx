@@ -10,6 +10,7 @@ import Tooltip2 from '@mui/material/Tooltip';
 import { FaHeartbeat } from "react-icons/fa";
 import CircularProgressBar from '../utils/CircularProgressBar';
 import { IoCheckmarkCircle, IoCloseCircle } from "react-icons/io5";
+import { BASE_API_URL } from '../context/AuthContext';
 
 // Add font styles
 const fontStyles = {
@@ -310,7 +311,7 @@ const WorkoutSummary = () => {
           return;
         }
         
-        const url = `http://localhost:5001/api/workouts/summary?period=${selectedMonth}`;
+        const url = `${BASE_API_URL}/api/workouts/summary?period=${selectedMonth}`;
         console.log('🌐 Request URL:', url);
         
         const response = await fetch(url, {

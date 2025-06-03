@@ -8,6 +8,7 @@ import { generateDietPlan } from '../utils/dietPlanAPI';
 import WorkoutDetails from './WorkoutDetails';
 import gsap from 'gsap';
 import WorkoutSummary from './WorkoutSummary';
+import { BASE_API_URL } from '../context/AuthContext';
 
 const blue = '#1d2145';
 
@@ -146,7 +147,7 @@ const GymDetails = ({ show, onClose }) => {
       // Format the date as YYYY-MM-01 for the period parameter (still UTC, as backend expects)
       const period = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-01`;
       console.log('Fetching workout dates for period:', period);
-      const response = await fetch(`http://localhost:5001/api/workouts/summary?period=${period}`, {
+      const response = await fetch(`${BASE_API_URL}/api/workouts/summary?period=${period}`, {
         headers: {
           'x-auth-token': sessionStorage.getItem('token')
         }
@@ -213,7 +214,7 @@ const GymDetails = ({ show, onClose }) => {
         return;
       }
 
-      const response = await fetch('http://localhost:5001/api/profile', {
+      const response = await fetch(`${BASE_API_URL}/api/profile`, {
         headers: {
           'x-auth-token': token
         }

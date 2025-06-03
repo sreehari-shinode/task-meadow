@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { BsArrowRight, BsPencil } from 'react-icons/bs';
 import { IoIosArrowBack } from 'react-icons/io';
+import { BASE_API_URL } from '../context/AuthContext';
 
 const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
   const { user, updateUser } = useAuth();
@@ -62,7 +63,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
           return;
         }
 
-        const response = await fetch('http://localhost:5001/api/profile', {
+        const response = await fetch(`${BASE_API_URL}/api/profile`, {
           headers: {
             'x-auth-token': token
           }
@@ -89,7 +90,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
             foodAllergies: data.foodAllergies || ''
           }));
           if (data.profileImage) {
-            setProfileImage(`http://localhost:5001${data.profileImage}`);
+            setProfileImage(`${BASE_API_URL}${data.profileImage}`);
           }
         }
       } catch (error) {
@@ -155,7 +156,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
 
     if (name === 'username' && value !== user?.username) {
       try {
-        const response = await fetch(`http://localhost:5001/api/profile/check-username?username=${value}`, {
+        const response = await fetch(`${BASE_API_URL}/api/profile/check-username?username=${value}`, {
           headers: {
             'x-auth-token': sessionStorage.getItem('token')
           }
@@ -199,7 +200,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
         return;
       }
 
-      const response = await fetch('http://localhost:5001/api/profile/update', {
+      const response = await fetch(`${BASE_API_URL}/api/profile/update`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -211,7 +212,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
       if (response.ok) {
         const updatedProfile = await response.json();
         if (updatedProfile.profileImage) {
-          setProfileImage(`http://localhost:5001${updatedProfile.profileImage}`);
+          setProfileImage(`${BASE_API_URL}${updatedProfile.profileImage}`);
         }
         setSelectedImage(null);
         setIsEditing(false);

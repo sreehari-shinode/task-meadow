@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEdit2, FiSave, FiArrowLeft, FiPlus, FiMinus } from 'react-icons/fi';
 import { Chip, TextField, IconButton, Box, Paper } from '@mui/material';
+import { BASE_API_URL } from '../context/AuthContext';
 
 const WorkoutDetails = ({ date, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -28,7 +29,7 @@ const WorkoutDetails = ({ date, onClose }) => {
   const fetchWorkout = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5001/api/workouts/${date.toISOString()}`, {
+      const response = await fetch(`${BASE_API_URL}/api/workouts/${date.toISOString()}`, {
         headers: {
           'x-auth-token': sessionStorage.getItem('token')
         }
@@ -80,7 +81,7 @@ const WorkoutDetails = ({ date, onClose }) => {
       console.log('Saving workout for date:', formattedDate);
       console.log('Cardio data:', cardioData);
 
-      const response = await fetch('http://localhost:5001/api/workouts', {
+      const response = await fetch(`${BASE_API_URL}/api/workouts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

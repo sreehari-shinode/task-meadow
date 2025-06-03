@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
+// Set your deployed backend URL here
+const BASE_API_URL = 'https://task-meadow.onrender.com'; // TODO: Replace with your actual Render backend URL
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     const token = sessionStorage.getItem('token');
     if (token) {
       // Fetch user data
-      fetch('/api/auth/user', {
+      fetch(`${BASE_API_URL}/api/auth/user`, {
         headers: {
           'x-auth-token': token
         }
@@ -41,7 +44,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(`${BASE_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +79,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = sessionStorage.getItem('token');
       if (token) {
-        await fetch('/api/auth/logout', {
+        await fetch(`${BASE_API_URL}/api/auth/logout`, {
           method: 'POST',
           headers: {
             'x-auth-token': token
@@ -94,7 +97,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, email, password) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register', {
+      const response = await fetch(`${BASE_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,4 +138,6 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};
+
+export { BASE_API_URL }; 
