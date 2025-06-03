@@ -1,0 +1,94 @@
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  perspective: 2500px;
+  margin-bottom: 100px;
+}
+
+.slider {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 400px;
+  perspective: 2000px;
+}
+
+.slider-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(15deg);
+  transition: transform 0.8s ease-in-out;
+}
+
+.slider-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 250px;
+  height: 350px;
+  margin-top: -175px;
+  margin-left: -125px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  will-change: transform, opacity;
+}
+
+.slider-item-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 0.8s ease-in-out;
+}
+
+.slider-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  pointer-events: none;
+  backface-visibility: hidden;
+}
+
+.slider-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* Remove the old position-based classes since we're using dynamic styles */
+.slider-item.active,
+.slider-item.next,
+.slider-item.prev,
+.slider-item.hidden {
+  transition: all 0.8s ease-in-out;
+}
+
+/* Additional 3D effect styles */
+.slider-item.active .slider-item-inner {
+  transform: translateZ(0);
+}
+
+.slider-item.next .slider-item-inner,
+.slider-item.prev .slider-item-inner {
+  transform: translateZ(-50px);
+}
+
+.slider-item.hidden .slider-item-inner {
+  transform: translateZ(-100px);
+} 

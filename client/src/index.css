@@ -1,0 +1,329 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/tt-tunnels');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Oswald', 'TT Tunnels Bold', Impact, sans-serif;
+  }
+}
+
+@layer components {
+  .react-calendar {
+    @apply bg-[#11113a] text-white border-none rounded-2xl w-full;
+  }
+
+  .react-calendar__tile {
+    @apply text-sm p-4 hover:bg-[#1a1a40] transition-colors duration-200 relative;
+  }
+
+  .react-calendar__tile--active {
+    @apply bg-[#d62e49] text-white rounded-lg;
+  }
+
+  .react-calendar__tile--now {
+    @apply bg-[#1a1a40] text-white rounded-lg;
+  }
+
+  .react-calendar__navigation button {
+    @apply text-white hover:bg-[#1a1a40] transition-colors duration-200;
+  }
+
+  .react-calendar__navigation button:disabled {
+    @apply bg-transparent;
+  }
+
+  .react-calendar__month-view__weekdays {
+    @apply text-white/70 font-semibold;
+  }
+
+  .react-calendar__month-view__weekdays__weekday {
+    @apply p-2;
+  }
+
+  .react-calendar__month-view__weekdays__weekday abbr {
+    @apply no-underline;
+  }
+
+  /* Workout and Cardio Indicators */
+  .react-calendar__tile--has-workout::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 4px;
+    height: 4px;
+    background-color: #22c55e;
+    border-radius: 1px;
+  }
+
+  .react-calendar__tile--has-cardio::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 9px;
+    width: 4px;
+    height: 4px;
+    background-color: #f59e0b;
+    border-radius: 1px;
+  }
+
+  .react-calendar__tile--has-both::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 4px;
+    height: 4px;
+    background-color: #22c55e;
+    border-radius: 1px;
+  }
+
+  .react-calendar__tile--has-both::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 9px;
+    width: 4px;
+    height: 4px;
+    background-color: #f59e0b;
+    border-radius: 1px;
+  }
+
+  .react-calendar__tile--now::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: #d62e49;
+    border-radius: 50%;
+  }
+}
+
+@layer utilities {
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 4px;
+    pointer-events: none; /* Disable clicking/dragging */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: white; /* Prevent hover color change */
+    pointer-events: none; /* Still non-interactive */
+  }
+
+  /* Firefox and Edge */
+  * {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: thin;
+    scrollbar-color: white transparent; /* Thumb / Track for Firefox */
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Calendar Styles */
+.custom-calendar {
+  background: #1d2145  !important;
+  border: none !important;
+  width: 100% !important;
+}
+
+.custom-calendar .react-calendar__navigation {
+  margin-bottom: 1em;
+  background: transparent !important;
+}
+
+.custom-calendar .react-calendar__navigation button {
+  color: white !important;
+  min-width: 44px;
+  background: none;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.custom-calendar .react-calendar__navigation button:enabled:hover,
+.custom-calendar .react-calendar__navigation button:enabled:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-calendar .react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.75em;
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: transparent !important;
+}
+
+.custom-calendar .react-calendar__month-view__weekdays__weekday {
+  padding: 0.5em;
+}
+
+.custom-calendar .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.custom-calendar .react-calendar__month-view__days__day {
+  color: white !important;
+  padding: 0.75em 0.5em;
+  background: none;
+  text-align: center;
+  position: relative;
+}
+
+.custom-calendar .react-calendar__month-view__days__day:enabled:hover,
+.custom-calendar .react-calendar__month-view__days__day:enabled:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-calendar .react-calendar__month-view__days__day--neighboringMonth {
+  color: rgba(255, 255, 255, 0.2) !important;
+  background-color: #1d2145 !important;
+}
+
+.custom-calendar .react-calendar__tile {
+  max-width: 100%;
+  padding: 10px 6.6667px;
+  background: none;
+  text-align: center;
+  line-height: 16px;
+  position: relative;
+}
+
+.custom-calendar .react-calendar__tile:enabled:hover,
+.custom-calendar .react-calendar__tile:enabled:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.custom-calendar .react-calendar__tile:disabled {
+  background-color: #1d2145 !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  cursor: not-allowed;
+}
+
+.custom-calendar .react-calendar__tile--now {
+  background: none !important;
+  color: white;
+}
+
+.custom-calendar .react-calendar__tile--now::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: #d62e49;
+  border-radius: 50%;
+}
+
+.custom-calendar .react-calendar__tile--now:enabled:hover,
+.custom-calendar .react-calendar__tile--now:enabled:focus {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.custom-calendar .react-calendar__tile--now:disabled {
+  background-color: #1d2145 !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-calendar .react-calendar__tile--active {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white;
+}
+
+.custom-calendar .react-calendar__tile--active:enabled:hover,
+.custom-calendar .react-calendar__tile--active:enabled:focus {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.custom-calendar .react-calendar__tile--active:disabled {
+  background-color: #1d2145 !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-calendar .react-calendar__navigation button:disabled {
+  background-color: #1d2145 !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  cursor: not-allowed;
+}
+
+.custom-calendar .react-calendar__month-view {
+  background: transparent !important;
+}
+
+.custom-calendar .react-calendar__viewContainer {
+  background: transparent !important;
+}
+
+.custom-calendar .react-calendar__navigation__label {
+  background: transparent !important;
+  color: white !important;
+}
+
+/* Workout and Cardio Indicators for Custom Calendar */
+.custom-calendar .react-calendar__tile--has-workout::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  background-color: #22c55e;
+  border-radius: 1px;
+}
+
+.custom-calendar .react-calendar__tile--has-cardio::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 9px;
+  width: 4px;
+  height: 4px;
+  background-color: #f59e0b;
+  border-radius: 1px;
+}
+
+.custom-calendar .react-calendar__tile--has-both::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  background-color: #22c55e;
+  border-radius: 1px;
+}
+
+.custom-calendar .react-calendar__tile--has-both::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 9px;
+  width: 4px;
+  height: 4px;
+  background-color: #f59e0b;
+  border-radius: 1px;
+}
