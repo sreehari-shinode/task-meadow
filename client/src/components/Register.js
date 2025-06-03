@@ -91,10 +91,10 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#1d2145' }}>
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
             Create your account
           </h2>
         </div>
@@ -102,8 +102,8 @@ const Register = () => {
         {message && (
           <div className={`p-4 mb-4 rounded-md ${
             isSuccess
-              ? 'bg-green-50 text-green-700 border border-green-200' 
-              : 'bg-red-50 text-red-700 border border-red-200'
+              ? 'bg-green-900/50 text-green-200 border border-green-500'
+              : 'bg-[#d62e49]/30 text-[#d62e49] border border-[#d62e49]'
           }`}>
             {message}
           </div>
@@ -112,7 +112,7 @@ const Register = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="username" className="block text-sm font-medium text-white">
                 Username
               </label>
               <input
@@ -121,19 +121,19 @@ const Register = () => {
                 type="text"
                 required
                 className={`mt-1 block w-full px-3 py-2 border ${
-                  errors.username ? 'border-red-500' : 'border-gray-300'
-                } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  errors.username ? 'border-[#d62e49]' : 'border-[#1d2145]'
+                } rounded-md shadow-sm placeholder-gray-400 text-white bg-[#23275a] focus:outline-none focus:ring-2 focus:ring-[#d62e49] focus:border-[#d62e49] sm:text-sm transition-colors duration-200`}
                 placeholder="Enter your username"
                 value={formData.username}
                 onChange={handleChange}
               />
               {errors.username && (
-                <p className="mt-2 text-sm text-red-600">{errors.username}</p>
+                <p className="mt-2 text-sm" style={{ color: '#d62e49' }}>{errors.username}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-white">
                 Email address
               </label>
               <input
@@ -142,19 +142,19 @@ const Register = () => {
                 type="email"
                 required
                 className={`mt-1 block w-full px-3 py-2 border ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
-                } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  errors.email ? 'border-[#d62e49]' : 'border-[#1d2145]'
+                } rounded-md shadow-sm placeholder-gray-400 text-white bg-[#23275a] focus:outline-none focus:ring-2 focus:ring-[#d62e49] focus:border-[#d62e49] sm:text-sm transition-colors duration-200`}
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
               />
               {errors.email && (
-                <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+                <p className="mt-2 text-sm" style={{ color: '#d62e49' }}>{errors.email}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-white">
                 Password
               </label>
               <input
@@ -163,14 +163,14 @@ const Register = () => {
                 type="password"
                 required
                 className={`mt-1 block w-full px-3 py-2 border ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
-                } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  errors.password ? 'border-[#d62e49]' : 'border-[#1d2145]'
+                } rounded-md shadow-sm placeholder-gray-400 text-white bg-[#23275a] focus:outline-none focus:ring-2 focus:ring-[#d62e49] focus:border-[#d62e49] sm:text-sm transition-colors duration-200`}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
               />
               {errors.password && (
-                <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+                <p className="mt-2 text-sm" style={{ color: '#d62e49' }}>{errors.password}</p>
               )}
             </div>
           </div>
@@ -178,7 +178,10 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white"
+              style={{ background: '#d62e49' }}
+              onMouseOver={e => e.currentTarget.style.background = '#b71c3b'}
+              onMouseOut={e => e.currentTarget.style.background = '#d62e49'}
             >
               Register
             </button>

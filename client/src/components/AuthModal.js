@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import bgImage from '../assets/bg.jpg';
 import { validateEmail, validatePassword, validateUsername } from '../utils/validation';
 
 const AuthModal = ({ isOpen, onClose }) => {
@@ -26,8 +25,6 @@ const AuthModal = ({ isOpen, onClose }) => {
       ...prev,
       [name]: value
     }));
-
-    // Real-time validation
     let errorMessage = '';
     switch (name) {
       case 'username':
@@ -42,7 +39,6 @@ const AuthModal = ({ isOpen, onClose }) => {
       default:
         break;
     }
-
     setErrors(prev => ({
       ...prev,
       [name]: errorMessage
@@ -55,13 +51,11 @@ const AuthModal = ({ isOpen, onClose }) => {
       email: '',
       password: ''
     };
-
     if (!isLogin) {
       newErrors.username = validateUsername(formData.username);
     }
     newErrors.email = validateEmail(formData.email);
     newErrors.password = validatePassword(formData.password);
-
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error !== '');
   };
@@ -70,33 +64,27 @@ const AuthModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-
     if (!validateForm()) {
       setError('Please fix the errors in the form before submitting.');
       return;
     }
-
     const { email, password, username } = formData;
     let result;
-
     if (isLogin) {
       result = await login(email, password);
     } else {
       result = await register(username, email, password);
     }
-
     if (result.success) {
       if (isLogin) {
         onClose();
       } else {
         setSuccessMessage('Registration successful! Please login to continue.');
-        // Clear form
         setFormData({
           username: '',
           email: '',
           password: ''
         });
-        // Switch to login after 2 seconds
         setTimeout(() => {
           setIsLogin(true);
           setSuccessMessage('');
@@ -110,138 +98,111 @@ const AuthModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex">
-      {/* Left side - Illustration */}
-      <motion.div 
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="w-1/2 bg-gradient-to-br from-terracotta-dark to-terracotta p-12 flex items-center justify-center relative overflow-hidden"
-      >
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: `url(${bgImage})` }}
-        ></div>
-        <div className="relative z-10 text-center">
-          <h1 className="text-5xl font-bold text-white mb-6">Welcome to Task Meadow</h1>
-          <p className="text-white/80 text-lg max-w-md mx-auto">
-            Your personal productivity companion. Track tasks, set goals, and achieve more every day.
-          </p>
-          <div className="mt-8">
-            <img 
-              src="/src/assets/auth-illustration.png" 
-              alt="Task Meadow Illustration" 
-              className="max-w-md mx-auto"
-            />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Right side - Form */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#1d2145' }}>
+      {/* Blurred gradient circles */}
+      <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-gradient-to-br from-pink-500 to-red-400 opacity-70 blur-3xl pointer-events-none" style={{ zIndex: 1, transform: 'translate(40%,-40%)', filter: 'blur(80px)' }} />
+      <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-gradient-to-br from-purple-500 to-blue-400 opacity-70 blur-3xl pointer-events-none" style={{ zIndex: 1, transform: 'translate(-40%,40%)', filter: 'blur(80px)' }} />
+      {/* Glassmorphism card */}
       <motion.div
-        initial={{ x: 100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="w-1/2 bg-slate-800 p-12 flex items-center justify-center"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="relative z-10 flex flex-col items-center justify-center w-full max-w-md p-10 rounded-2xl shadow-xl border border-white/20"
+        style={{
+          background: 'rgba(35, 39, 90, 0.65)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)'
+        }}
       >
-        <div className="w-full max-w-md">
-          <h2 className="text-3xl font-bold mb-8 text-terracotta">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
-          </h2>
-
-          {error && (
-            <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6">
-              {error}
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded-lg mb-6">
-              {successMessage}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && (
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-lg bg-slate-700 border ${
-                    errors.username ? 'border-red-500' : 'border-slate-600'
-                  } text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-transparent transition-all`}
-                  placeholder="Enter your username"
-                  required
-                />
-                {errors.username && (
-                  <p className="mt-2 text-sm text-red-400">{errors.username}</p>
-                )}
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-lg bg-slate-700 border ${
-                  errors.email ? 'border-red-500' : 'border-slate-600'
-                } text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-transparent transition-all`}
-                placeholder="Enter your email"
-                required
-              />
-              {errors.email && (
-                <p className="mt-2 text-sm text-red-400">{errors.email}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-lg bg-slate-700 border ${
-                  errors.password ? 'border-red-500' : 'border-slate-600'
-                } text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-transparent transition-all`}
-                placeholder="Enter your password"
-                required
-              />
-              {errors.password && (
-                <p className="mt-2 text-sm text-red-400">{errors.password}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-terracotta text-white py-3 px-4 rounded-lg font-medium hover:bg-terracotta/90 focus:outline-none focus:ring-2 focus:ring-terracotta focus:ring-offset-2 focus:ring-offset-slate-800 transition-all transform hover:scale-[1.02]"
-            >
-              {isLogin ? 'Sign In' : 'Sign Up'}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => {
-                setIsLogin(!isLogin);
-                // Clear errors and messages when switching modes
-                setErrors({
-                  username: '',
-                  email: '',
-                  password: ''
-                });
-                setError('');
-                setSuccessMessage('');
-              }}
-              className="text-slate-300 hover:text-terracotta transition-colors"
-            >
-              {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-            </button>
+        <h2 className="text-3xl font-bold mb-8 text-white text-center">
+          {isLogin ? 'Welcome Back' : 'Create Account'}
+        </h2>
+        {error && (
+          <div className="bg-[#d62e49]/30 border border-[#d62e49] text-[#d62e49] px-4 py-3 rounded-lg mb-6">
+            {error}
           </div>
+        )}
+        {successMessage && (
+          <div className="bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded-lg mb-6">
+            {successMessage}
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="space-y-6 w-full">
+          {!isLogin && (
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 rounded-lg bg-[#23275a] border ${
+                  errors.username ? 'border-[#d62e49]' : 'border-[#1d2145]'
+                } text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#d62e49] focus:border-transparent transition-all`}
+                placeholder="Enter your username"
+                required
+              />
+              {errors.username && (
+                <p className="mt-2 text-sm" style={{ color: '#d62e49' }}>{errors.username}</p>
+              )}
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 rounded-lg bg-[#23275a] border ${
+                errors.email ? 'border-[#d62e49]' : 'border-[#1d2145]'
+              } text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#d62e49] focus:border-transparent transition-all`}
+              placeholder="Enter your email"
+              required
+            />
+            {errors.email && (
+              <p className="mt-2 text-sm" style={{ color: '#d62e49' }}>{errors.email}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 rounded-lg bg-[#23275a] border ${
+                errors.password ? 'border-[#d62e49]' : 'border-[#1d2145]'
+              } text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#d62e49] focus:border-transparent transition-all`}
+              placeholder="Enter your password"
+              required
+            />
+            {errors.password && (
+              <p className="mt-2 text-sm" style={{ color: '#d62e49' }}>{errors.password}</p>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="w-full text-white py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-[#d62e49] focus:ring-offset-2 transition-all transform hover:scale-[1.02]"
+            style={{ background: '#d62e49', border: 'none' }}
+            onMouseOver={e => e.currentTarget.style.background = '#b71c3b'}
+            onMouseOut={e => e.currentTarget.style.background = '#d62e49'}
+          >
+            {isLogin ? 'Sign In' : 'Sign Up'}
+          </button>
+        </form>
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setErrors({ username: '', email: '', password: '' });
+              setError('');
+              setSuccessMessage('');
+            }}
+            className="text-white hover:text-[#d62e49] transition-colors"
+          >
+            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+          </button>
         </div>
       </motion.div>
     </div>
