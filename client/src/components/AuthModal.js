@@ -192,7 +192,7 @@ const AuthModal = ({ isOpen, onClose }) => {
           </button>
         </form>
         <div className="mt-6 text-center">
-          <button
+          {/* <button
             onClick={() => {
               setIsLogin(!isLogin);
               setErrors({ username: '', email: '', password: '' });
@@ -202,7 +202,7 @@ const AuthModal = ({ isOpen, onClose }) => {
             className="text-white hover:text-[#d62e49] transition-colors"
           >
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-          </button>
+          </button> */}
         </div>
       </motion.div>
     </div>
