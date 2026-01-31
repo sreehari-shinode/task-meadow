@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext(null);
 
 // Set your deployed backend URL here
-const BASE_API_URL = 'https://task-meadow-backend.onrender.com'; // Replace with your actual Render backend URL
+const BASE_API_URL = 'https://https://task-meadow.onrender.com'; // Replace with your actual Render backend URL
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
