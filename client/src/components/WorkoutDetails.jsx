@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FiEdit2, FiSave, FiArrowLeft, FiPlus } from 'react-icons/fi';
 import { Chip,  } from '@mui/material';
 import { BASE_API_URL } from '../context/AuthContext';
@@ -22,48 +22,55 @@ const WorkoutDetails = ({ date }) => {
     'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Legs', 'Core'
   ];
 
-  useEffect(() => {
-    fetchWorkout();
-  }, [date]);
+  const fetchWorkout = useCallback(async () => {
+  try {
+    setLoading(true);
 
-  const fetchWorkout = async () => {
-    try {
-      setLoading(true);
-      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-      const response = await fetch(`${BASE_API_URL}/api/workouts/${dateStr}`, {
+    const dateStr = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const response = await fetch(
+      `${BASE_API_URL}/api/workouts/${dateStr}`,
+      {
         headers: {
-          'x-auth-token': sessionStorage.getItem('token')
-        }
-      });
-
-      if (response.status === 404) {
-        setWorkout(null);
-        setFormData({
-          musclesHit: [],
-          duration: '',
-          intensity: 'Medium',
-          cardio: { activity: '', duration: '', distance: '' },
-          personalRecords: [],
-          additionalNotes: ''
-        });
-      } else if (response.ok) {
-        const data = await response.json();
-        setWorkout(data);
-        setFormData({
-          musclesHit: data.musclesHit || [],
-          duration: data.duration || '',
-          intensity: data.intensity || 'Medium',
-          cardio: data.cardio || { activity: '', duration: '', distance: '' },
-          personalRecords: data.personalRecords || [],
-          additionalNotes: data.additionalNotes || ''
-        });
+          'x-auth-token': sessionStorage.getItem('token'),
+        },
       }
-    } catch (err) {
-      setError('Failed to fetch workout data');
-    } finally {
-      setLoading(false);
+    );
+
+    if (response.status === 404) {
+      setWorkout(null);
+      setFormData({
+        musclesHit: [],
+        duration: '',
+        intensity: 'Medium',
+        cardio: { activity: '', duration: '', distance: '' },
+        personalRecords: [],
+        additionalNotes: '',
+      });
+    } else if (response.ok) {
+      const data = await response.json();
+      setWorkout(data);
+      setFormData({
+        musclesHit: data.musclesHit || [],
+        duration: data.duration || '',
+        intensity: data.intensity || 'Medium',
+        cardio: data.cardio || { activity: '', duration: '', distance: '' },
+        personalRecords: data.personalRecords || [],
+        additionalNotes: data.additionalNotes || '',
+      });
     }
-  };
+  } catch (err) {
+    setError('Failed to fetch workout data');
+  } finally {
+    setLoading(false);
+  }
+}, [date]);
+
+useEffect(() => {
+  fetchWorkout();
+}, [fetchWorkout]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 import Profile from './Profile';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { generateDietPlan } from '../utils/dietPlanAPI';
 import WorkoutDetails from './WorkoutDetails';
 import WorkoutSummary from './WorkoutSummary';
 import SleepTracker from './SleepTracker';
@@ -19,50 +18,28 @@ const overlayVariants = {
   exit: { opacity: 0, transition: { duration: 0.4 } }
 };
 
-const dropVariants = {
-  initial: { y: -100, opacity: 0 },
-  animate: { y: 0, opacity: 1, transition: { delay: 0.7, duration: 0.7, type: 'spring', stiffness: 60 } },
-  exit: { y: -100, opacity: 0, transition: { duration: 0.4 } }
-};
-
 const sectionVariants = {
   initial: { opacity: 0, y: 50 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] } },
   exit: { opacity: 0, y: 50, transition: { duration: 0.4 } }
 };
 
-function formatDateIST(date) {
-  // Convert to IST (UTC+5:30)
-  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-  const istTime = new Date(utc + (5.5 * 60 * 60000));
-  const year = istTime.getFullYear();
-  const month = String(istTime.getMonth() + 1).padStart(2, '0');
-  const day = String(istTime.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 const GymDetails = ({ show, onClose, inline = false }) => {
-  const textRef = useRef(null);
-  const { user } = useAuth();
+  // const textRef = useRef(null);
+  // const { user } = useAuth();
   const [showProfile, setShowProfile] = useState(false);
   const [profileTriggerPosition, setProfileTriggerPosition] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [dietPlan, setDietPlan] = useState(null);
-  const [isLoadingDiet, setIsLoadingDiet] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [showDietPlan, setShowDietPlan] = useState(false);
-  const [error, setError] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [showSummary, setShowSummary] = useState(true);
   const [workoutDates, setWorkoutDates] = useState({});
 
   // In both inline and overlay modes, show all content immediately
-  // (we have removed the "YEAH BUDDY LIGHTWEIGHT" intro animation).
   useEffect(() => {
     setShowSummary(true);
     setShowCalendar(true);
-    setShowDietPlan(true);
   }, []);
 
   const isActive = inline || show;
@@ -73,56 +50,66 @@ const GymDetails = ({ show, onClose, inline = false }) => {
     }
   }, [isActive]);
 
-  const fetchWorkoutDates = async (date = new Date()) => {
-    try {
-      const selectedDate = new Date(date);
-      // Format the date as YYYY-MM-01 for the period parameter (still UTC, as backend expects)
-      const period = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-01`;
-      console.log('Fetching workout dates for period:', period);
-      const response = await fetch(`${BASE_API_URL}/api/workouts/summary?period=${period}`, {
+  const fetchWorkoutDates = useCallback(async (date = new Date()) => {
+  try {
+    const selectedDate = new Date(date);
+    const period = `${selectedDate.getFullYear()}-${String(
+      selectedDate.getMonth() + 1
+    ).padStart(2, '0')}-01`;
+
+    const response = await fetch(
+      `${BASE_API_URL}/api/workouts/summary?period=${period}`,
+      {
         headers: {
-          'x-auth-token': sessionStorage.getItem('token')
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const dates = {};
-        // Use backend's date string directly for all keys
-        data.data.weeklyBreakdown.forEach(week => {
-          week.dailyBreakdown.forEach(day => {
-            if (day.totalTime > 0 || (day.cardio && day.cardio.activity && day.cardio.duration > 0)) {
-              dates[day.date] = {
-                hasWorkout: day.totalTime > 0,
-                hasCardio: day.cardio && day.cardio.activity && day.cardio.duration > 0
-              };
-            }
-          });
-        });
-        console.log('Processed workout dates (backend date keys):', dates);
-        setWorkoutDates(dates);
-      } else {
-        console.error('Failed to fetch workout dates:', response.statusText);
-        setWorkoutDates({});
+          'x-auth-token': sessionStorage.getItem('token'),
+        },
       }
-    } catch (error) {
-      console.error('Error fetching workout dates:', error);
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      const dates = {};
+
+      data.data.weeklyBreakdown.forEach(week => {
+        week.dailyBreakdown.forEach(day => {
+          if (
+            day.totalTime > 0 ||
+            (day.cardio?.activity && day.cardio?.duration > 0)
+          ) {
+            dates[day.date] = {
+              hasWorkout: day.totalTime > 0,
+              hasCardio: !!(
+                day.cardio?.activity && day.cardio?.duration > 0
+              ),
+            };
+          }
+        });
+      });
+
+      setWorkoutDates(dates);
+    } else {
       setWorkoutDates({});
     }
-  };
+  } catch (error) {
+    setWorkoutDates({});
+  }
+}, []);
+
 
   // Initial fetch when component mounts
   useEffect(() => {
-    if (isActive) {
-      fetchWorkoutDates(selectedDate);
-    }
-  }, [isActive]);
+  if (isActive) {
+    fetchWorkoutDates(selectedDate);
+  }
+}, [isActive, selectedDate, fetchWorkoutDates]);
+
 
   // Fetch when selected date changes
   useEffect(() => {
     if (isActive) {
       fetchWorkoutDates(selectedDate);
     }
-  }, [selectedDate, isActive]);
+  }, [selectedDate, isActive, fetchWorkoutDates]);
 
   const handleDateChange = (date) => {
     // Don't allow selecting future dates
@@ -156,13 +143,9 @@ const GymDetails = ({ show, onClose, inline = false }) => {
         const data = await response.json();
         console.log('Fetched profile data:', data);
         setUserProfile(data);
-        if (showDietPlan) {
-          fetchDietPlan(data);
-        }
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setError('Failed to load profile data');
     } finally {
       setIsLoadingProfile(false);
     }
@@ -177,26 +160,8 @@ const GymDetails = ({ show, onClose, inline = false }) => {
     setShowProfile(true);
   };
 
-  const fetchDietPlan = async (profile = userProfile) => {
-    if (!profile) return;
-    
-    setIsLoadingDiet(true);
-    setError(null);
-    try {
-      const plan = await generateDietPlan(profile);
-      setDietPlan(plan);
-    } catch (error) {
-      console.error('Error fetching diet plan:', error);
-      setError('Failed to generate diet plan. Please try again later.');
-    }
-    setIsLoadingDiet(false);
-  };
-
   const handleProfileUpdate = (updatedProfile) => {
     setUserProfile(updatedProfile);
-    if (showDietPlan) {
-      fetchDietPlan(updatedProfile);
-    }
   };
 
   const tileClassName = ({ date }) => {
@@ -277,7 +242,7 @@ const GymDetails = ({ show, onClose, inline = false }) => {
 
           <AnimatePresence>
             {showSummary && (
-              <div
+              <motion.div
                 className="w-full px-6 md:px-10 mb-8"
                 variants={sectionVariants}
                 initial="initial"
@@ -285,13 +250,13 @@ const GymDetails = ({ show, onClose, inline = false }) => {
                 exit="exit"
               >
                 <WorkoutSummary />
-              </div>
+              </motion.div>
             )}
           </AnimatePresence>
 
           <AnimatePresence>
             {showCalendar && (
-              <div
+              <motion.div
                 className="w-full px-6 md:px-10 flex flex-col lg:flex-row gap-6"
                 variants={sectionVariants}
                 initial="initial"
@@ -299,105 +264,55 @@ const GymDetails = ({ show, onClose, inline = false }) => {
                 exit="exit"
               >
                 <div className="flex flex-col gap-6 w-full">
-                <div className="flex gap-6 w-full">
-                  <div className="w-3/5">
-                    <WorkoutDetails date={selectedDate} />
+                  <div className="flex gap-6 w-full">
+                    <div className="w-3/5">
+                      <WorkoutDetails date={selectedDate} />
+                    </div>
+                    <div className="w-2/5">
+                      <Calendar
+                        onChange={handleDateChange}
+                        value={selectedDate}
+                        className="custom-calendar w-full"
+                        tileClassName={tileClassName}
+                        tileDisabled={tileDisabled}
+                        onActiveStartDateChange={handleActiveStartDateChange}
+                        formatShortWeekday={(locale, date) => date.toLocaleDateString('en-US', { weekday: 'short' })}
+                        formatMonthYear={(locale, date) => date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        next2Label={null}
+                        prev2Label={null}
+                        minDetail="month"
+                        maxDetail="month"
+                        showNeighboringMonth={true}
+                      />
+                    </div>
                   </div>
-                  <div className="w-2/5">
-                    <Calendar
-                      onChange={handleDateChange}
-                      value={selectedDate}
-                      className="custom-calendar w-full"
-                      tileClassName={tileClassName}
-                      tileDisabled={tileDisabled}
-                      onActiveStartDateChange={handleActiveStartDateChange}
-                      formatShortWeekday={(locale, date) => date.toLocaleDateString('en-US', { weekday: 'short' })}
-                      formatMonthYear={(locale, date) => date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                      next2Label={null}
-                      prev2Label={null}
-                      minDetail="month"
-                      maxDetail="month"
-                      showNeighboringMonth={true}
-                    />
+                  <div className="flex gap-6 w-full">
+                    <div className="w-3/5 h-full">
+                      <WeightTracker />
+                    </div>
+                    <div className="w-2/5 h-full">
+                      <SleepTracker />
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-6 w-full">
-                  <div className="w-3/5 h-full">
-                    <WeightTracker />
-                  </div>
-                  <div className="w-2/5 h-full">
-                    <SleepTracker />
-                  </div>
-                </div>
-              </div>
-
-              </div>
-            )}
-          </AnimatePresence>
-
-          {/* Diet Plan Section */}
-          {/* <AnimatePresence>
-            {showDietPlan && (
-              <motion.div
-                className="w-full px-6 md:px-10 mt-10 mb-16"
-                variants={sectionVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-              >
-                <h2 className="text-2xl font-semibold text-white mb-4">Your Personalized Diet Plan</h2>
-                <div className="bg-[#11113a] p-5 rounded-2xl shadow-lg">
-                  {isLoadingProfile ? (
-                    <div className="flex justify-center items-center h-64">
-                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d62e49]"></div>
-                    </div>
-                  ) : isLoadingDiet ? (
-                    <div className="flex justify-center items-center h-64">
-                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d62e49]"></div>
-                    </div>
-                  ) : error ? (
-                    <div className="text-center text-[#d62e49] p-4">
-                      {error}
-                      <button 
-                        onClick={() => fetchDietPlan()}
-                        className="mt-4 px-4 py-2 bg-[#d62e49] text-white rounded-lg hover:bg-[#b8253d] transition-colors duration-200"
-                      >
-                        Try Again
-                      </button>
-                    </div>
-                  ) : dietPlan ? (
-                    <div className="space-y-6">
-                      {dietPlan.meals.map((meal, index) => (
-                        <div key={index} className="bg-[#1a1a40] p-4 rounded-xl">
-                          <h3 className="text-xl font-semibold text-white mb-2">{meal.name}</h3>
-                          <p className="text-gray-300">{meal.description}</p>
-                          <div className="mt-2 text-sm text-gray-400">
-                            Calories: {meal.calories} | Protein: {meal.protein}g | Carbs: {meal.carbs}g | Fat: {meal.fat}g
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center text-gray-400">
-                      No diet plan available. Please update your profile preferences.
-                    </div>
-                  )}
                 </div>
               </motion.div>
             )}
-          </AnimatePresence> */}
+          </AnimatePresence>
 
           {/* Profile Modal */}
-          <Profile 
+          { userProfile && isLoadingProfile === false && (
+               <Profile 
             isOpen={showProfile} 
             onClose={() => setShowProfile(false)}
             triggerPosition={profileTriggerPosition}
             onProfileUpdate={handleProfileUpdate}
           />
+            )}
+         
         </div>
       )}
     </div>
   );
 };
 
-export default GymDetails; 
+export default GymDetails;

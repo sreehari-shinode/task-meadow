@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { BASE_API_URL } from "../context/AuthContext";
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Area, AreaChart } from "recharts";
 
@@ -85,14 +85,9 @@ const WeightTracker = () => {
     }
   }, [selectedPeriod]);
 
-  useEffect(() => {
-    if (!token) return;
-    fetchAnalytics();
-    fetchWeightData();
-    checkCanEnterWeight();
-  }, [token, selectedPeriod]);
 
-  const fetchAnalytics = async () => {
+
+  const fetchAnalytics = useCallback( async () => {
     try {
       const response = await fetch(
         `${BASE_API_URL}/api/weight-tracking/analytics?period=${selectedPeriod}`,
@@ -105,9 +100,9 @@ const WeightTracker = () => {
     } catch (error) {
       console.error('Error fetching analytics:', error);
     }
-  };
+  },[selectedPeriod, token]);
 
-  const fetchWeightData = async () => {
+  const fetchWeightData = useCallback(async () => {
     if (!token) return;
     // setLoading(true);
     try {
@@ -133,9 +128,9 @@ const WeightTracker = () => {
     } finally {
       // setLoading(false);
     }
-  };
+  }, [token, selectedPeriod]);
 
-  const checkCanEnterWeight = async () => {
+  const checkCanEnterWeight =useCallback(async () => {
     try {
       const response = await fetch(
         `${BASE_API_URL}/api/weight-tracking/can-enter`,
@@ -148,7 +143,14 @@ const WeightTracker = () => {
     } catch (error) {
       console.error('Error checking weight entry permission:', error);
     }
-  };
+  },[token]);
+
+    useEffect(() => {
+    if (!token) return;
+    fetchAnalytics();
+    fetchWeightData();
+    checkCanEnterWeight();
+  }, [fetchAnalytics, fetchWeightData, checkCanEnterWeight, token]);
 
   const handleSaveWeight = async (weightValue) => {
     const weight = parseFloat(String(weightValue).trim(), 10);

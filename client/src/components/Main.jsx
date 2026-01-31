@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import StickyHeader from "./Header";
-import Reminders from "./Reminder";
 import AuthModal from "./AuthModal";
 import GymDetails from "./GymDetails";
 import LoadingScreen from "./LoadingScreen";
@@ -47,9 +46,9 @@ const HomeTabsLayout = ({ headerHeight, setHeaderHeight }) => {
   const tabs = [
     { key: TAB_KEYS.DAILY, label: 'Daily Habits' },
     { key: TAB_KEYS.WEEKLY, label: 'Weekly Habits' },
-    { key: TAB_KEYS.GYM, label: 'Gym Tracker' },
-    { key: TAB_KEYS.CAT, label: 'CAT' },
-    { key: TAB_KEYS.TODO, label: 'To-do list' },
+    { key: TAB_KEYS.GYM, label: 'Workout Tracker' },
+    { key: TAB_KEYS.CAT, label: 'CAT Mock Analysis' },
+    { key: TAB_KEYS.TODO, label: 'To-Do List' },
   ];
 
   return (

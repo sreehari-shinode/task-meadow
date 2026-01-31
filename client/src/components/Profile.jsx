@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { BsArrowRight, BsPencil } from 'react-icons/bs';
-import { IoIosArrowBack } from 'react-icons/io';
 import { BASE_API_URL } from '../context/AuthContext';
 
 const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
@@ -33,8 +32,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
   const [usernameAvailable, setUsernameAvailable] = useState(true);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  // const [error, setError] = useState(null);
 
   // Add style block for select elements
   useEffect(() => {
@@ -162,6 +160,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
           }
         });
         const data = await response.json();
+        console.log('username', data);
         setUsernameAvailable(data.available);
       } catch (error) {
         console.error('Error checking username:', error);
@@ -172,7 +171,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
+    // setError(null);
 
     try {
       const formData = new FormData();
@@ -228,11 +227,11 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
           onClose();
         }, 1500);
       } else {
-        const data = await response.json();
-        setError(data.message || 'Failed to update profile');
+        // const data = await response.json();
+        // setError(data.message || 'Failed to update profile');
       }
     } catch (err) {
-      setError(err.message || 'Failed to update profile');
+      // setError(err.message || 'Failed to update profile');
     } finally {
       setIsLoading(false);
     }
@@ -341,6 +340,33 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
                     <div className="mb-8">
                       <h2 className="text-2xl font-bold text-white mb-4">Personal Info</h2>
                       <div className="grid grid-cols-5 gap-4 pl-12 font-sans">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300">Username</label>
+                          {isEditing ? (
+                            <div>
+                              <input
+                                type="text"
+                                name="username"
+                                value={profileData.username}
+                                onChange={handleInputChange}
+                                className={`mt-1 block w-full text-white rounded-lg px-3 py-2 border-0 focus:outline-none focus:ring-0 font-normal font-sans bg-[#2a2f5c] ${
+                                  profileData.username !== user?.username && !usernameAvailable
+                                    ? 'border-2 border-red-500'
+                                    : ''
+                                }`}
+                              />
+                              {profileData.username !== user?.username && (
+                                <p className={`text-xs mt-1 ${
+                                  usernameAvailable ? 'text-green-400' : 'text-red-400'
+                                }`}>
+                                  {usernameAvailable ? 'Username available' : 'Username not available'}
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-lg text-white font-normal font-sans">{profileData.username}</p>
+                          )}
+                        </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-300">Age</label>
                           {isEditing ? (

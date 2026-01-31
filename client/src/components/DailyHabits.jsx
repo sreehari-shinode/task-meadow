@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FormControl, Select, MenuItem } from "@mui/material";
 import {
   BarChart,
@@ -20,9 +20,9 @@ const DailyHabits = () => {
   const [habits, setHabits] = useState([]);
   const [newHabitName, setNewHabitName] = useState("");
   const [newHabitGoal, setNewHabitGoal] = useState(20);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const metaSaveTimeoutRef = useRef(null);
+  // const [loading, setLoading] = useState(false);
+  // const [saving, setSaving] = useState(false);
+  // const metaSaveTimeoutRef = useRef(null);
 
   // Set default month to current month (YYYY-MM-01)
   useEffect(() => {
@@ -80,7 +80,7 @@ const DailyHabits = () => {
     if (!monthKey || !user) return;
     const token = sessionStorage.getItem("token");
     if (!token) return;
-    setLoading(true);
+    // setLoading(true);
     fetch(`${BASE_API_URL}/api/habits/daily?month=${monthKey}`, {
       headers: { "x-auth-token": token },
     })
@@ -98,7 +98,7 @@ const DailyHabits = () => {
         }
       })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally();
   }, [monthKey, user]);
 
 
@@ -162,7 +162,7 @@ const DailyHabits = () => {
       if (!monthKey) return Promise.resolve();
       const token = sessionStorage.getItem("token");
       if (!token) return Promise.resolve();
-      setSaving(true);
+      // setSaving(true);
       return fetch(`${BASE_API_URL}/api/habits/daily`, {
         method: "POST",
         headers: {
@@ -199,7 +199,7 @@ const DailyHabits = () => {
           }
         })
         .catch(() => {})
-        .finally(() => setSaving(false));
+        .finally();
     },
     [monthKey]
   );
@@ -214,35 +214,35 @@ const DailyHabits = () => {
       checks: Array(DAYS.length).fill(false),
     };
     setNewHabitName("");
-    setSaving(true);
+    // setSaving(true);
     saveDailyHabitsToApi([...habits, newHabit]);
   };
 
-  const handleHabitMetaChange = (id, field, value) => {
-    if (metaSaveTimeoutRef.current) clearTimeout(metaSaveTimeoutRef.current);
-    setHabits((prev) =>
-      prev.map((h) =>
-        h.id === id
-          ? {
-              ...h,
-              [field]: field === "goal" ? parseInt(value, 10) || 0 : value,
-            }
-          : h
-      )
-    );
-    metaSaveTimeoutRef.current = setTimeout(() => {
-      setHabits((current) => {
-        saveDailyHabitsToApi(current);
-        return current;
-      });
-    }, 800);
-  };
+  // const handleHabitMetaChange = (id, field, value) => {
+  //   if (metaSaveTimeoutRef.current) clearTimeout(metaSaveTimeoutRef.current);
+  //   setHabits((prev) =>
+  //     prev.map((h) =>
+  //       h.id === id
+  //         ? {
+  //             ...h,
+  //             [field]: field === "goal" ? parseInt(value, 10) || 0 : value,
+  //           }
+  //         : h
+  //     )
+  //   );
+  //   metaSaveTimeoutRef.current = setTimeout(() => {
+  //     setHabits((current) => {
+  //       saveDailyHabitsToApi(current);
+  //       return current;
+  //     });
+  //   }, 800);
+  // };
 
   const handleRemoveHabit = (id) => {
     const token = sessionStorage.getItem("token");
     const isServerId = id && String(id).length >= 20;
     if (token && isServerId) {
-      setSaving(true);
+      // setSaving(true);
       fetch(`${BASE_API_URL}/api/habits/daily/${id}`, {
         method: "DELETE",
         headers: { "x-auth-token": token },
@@ -250,7 +250,7 @@ const DailyHabits = () => {
         .then(() => {
           setHabits((prev) => prev.filter((h) => h.id !== id));
         })
-        .finally(() => setSaving(false));
+        .finally();
     } else {
       setHabits((prev) => prev.filter((h) => h.id !== id));
     }

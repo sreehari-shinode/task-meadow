@@ -7,7 +7,7 @@ const StickyHeader = ({ onHeightChange, onShrinkChange }) => {
   const minHeight = 80;
   const [scrollY, setScrollY] = useState(0);
   const [isShrunk, setIsShrunk] = useState(false);
-  const [locked, setLocked] = useState(false);
+  // const [locked, setLocked] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
   const [profileTriggerPosition, setProfileTriggerPosition] = useState(null);
@@ -19,7 +19,7 @@ const StickyHeader = ({ onHeightChange, onShrinkChange }) => {
 
       const shouldShrink = currentScroll >= maxHeight - minHeight;
       setIsShrunk(shouldShrink);
-      setLocked(shouldShrink);
+      // setLocked(shouldShrink);
 
       // Show the scroll-down button only when we are near the top
       // (hero visible). Hide it once we've scrolled down.
@@ -45,16 +45,16 @@ const StickyHeader = ({ onHeightChange, onShrinkChange }) => {
   }, [calculatedHeight, onHeightChange]);
 
   // Fade calculations
-  const fadeStart = maxHeight * 0.3;
-  const fadeEnd = maxHeight * 0.6;
+  // const fadeStart = maxHeight * 0.3;
+  // const fadeEnd = maxHeight * 0.6;
 
-  const descriptionFadeProgress = Math.min(
-    Math.max((scrollY - fadeStart) / (fadeEnd - fadeStart), 0),
-    1
-  );
+  // const descriptionFadeProgress = Math.min(
+  //   Math.max((scrollY - fadeStart) / (fadeEnd - fadeStart), 0),
+  //   1
+  // );
 
-  const descriptionOpacity = 1 - descriptionFadeProgress;
-  const hideDescription = scrollY >= fadeEnd;
+  // const descriptionOpacity = 1 - descriptionFadeProgress;
+  // const hideDescription = scrollY >= fadeEnd;
 
   // Text fade and position calculation
   const textFadeStart = maxHeight * 0.2;

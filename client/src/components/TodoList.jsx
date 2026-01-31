@@ -37,17 +37,6 @@ const TodoList = () => {
     return dates;
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      fetchLists();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (selectedList) {
-      fetchTasks(selectedList._id);
-    }
-  }, [selectedList]);
 
   const fetchLists = useCallback(async () => {
     try {
@@ -88,6 +77,18 @@ const TodoList = () => {
       console.error('Error fetching tasks:', error);
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchLists();
+    }
+  }, [user,fetchLists]);
+
+  useEffect(() => {
+    if (selectedList) {
+      fetchTasks(selectedList._id);
+    }
+  }, [selectedList,fetchTasks]);
 
   const handleAddList = async () => {
     if (!newListName.trim()) return;
@@ -139,20 +140,21 @@ const TodoList = () => {
     setTasks(prev => [...prev, newTask]);
   }, []);
 
-  const handleTaskChange = useCallback((taskId, field, value) => {
-    setTasks(prev => prev.map(task => 
-      task._id === taskId 
+const handleTaskChange = useCallback((taskId, field, value) => {
+  setTasks(prev =>
+    prev.map(task =>
+      task._id === taskId
         ? { ...task, [field]: value }
         : task
-    ));
-    autoSave();
-  }, []);
+    )
+  );
+}, []);
 
-  const handleDeleteTask = useCallback((taskId) => {
-    setTasks(prev => prev.filter(task => task._id !== taskId));
-    autoSave();
-  }, []);
-
+const handleDeleteTask = useCallback((taskId) => {
+  setTasks(prev =>
+    prev.filter(task => task._id !== taskId)
+  );
+}, []);
  
 
   const handleSave = useCallback(async (silent = false) => {
@@ -296,6 +298,12 @@ const TodoList = () => {
     }, 2000);
   }, [handleSave]);
 
+  
+useEffect(() => {
+  autoSave();
+}, [tasks, autoSave]);
+
+
   const handleDeleteList = async (listId) => {
     if (!window.confirm('Are you sure you want to delete this list? All tasks will be deleted.')) return;
     
@@ -349,16 +357,16 @@ const TodoList = () => {
   }, [tasks, filter, selectedDate]);
 
   // Calculate list view analytics
-  const listAnalytics = useMemo(() => {
-    // This would ideally fetch task counts for each list, but for now we'll use placeholder
-    const totalLists = lists.length;
-    const totalTasks = 0; // Would need to fetch this
-    const completedTasks = 0;
-    const activeTasks = 0;
-    const thisMonth = 0;
+  // const listAnalytics = useMemo(() => {
+  //   // This would ideally fetch task counts for each list, but for now we'll use placeholder
+  //   const totalLists = lists.length;
+  //   const totalTasks = 0; // Would need to fetch this
+  //   const completedTasks = 0;
+  //   const activeTasks = 0;
+  //   const thisMonth = 0;
     
-    return { totalLists, totalTasks, completedTasks, activeTasks, thisMonth };
-  }, [lists]);
+  //   return { totalLists, totalTasks, completedTasks, activeTasks, thisMonth };
+  // }, [lists]);
 
   return (
     <div className="w-full min-h-screen text-white">

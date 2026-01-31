@@ -27,7 +27,7 @@ const getDaysBack = (n) => {
 const SleepTracker = () => {
   const [days] = useState(() => getDaysBack(14));
   const [entries, setEntries] = useState({});
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const saveTimeoutRef = useRef(null);
 
@@ -38,7 +38,7 @@ const SleepTracker = () => {
 
   useEffect(() => {
     if (!token || !startStr || !endStr) return;
-    setLoading(true);
+    // setLoading(true);
     fetch(
       `${BASE_API_URL}/api/events/range?start=${startStr}&end=${endStr}`,
       { headers: { "x-auth-token": token } }
@@ -57,7 +57,7 @@ const SleepTracker = () => {
         setEntries(byDate);
       })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally();
   }, [token, startStr, endStr]);
 
   const entriesRef = useRef(entries);
