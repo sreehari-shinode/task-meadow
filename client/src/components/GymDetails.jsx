@@ -6,8 +6,9 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { generateDietPlan } from '../utils/dietPlanAPI';
 import WorkoutDetails from './WorkoutDetails';
-import gsap from 'gsap';
 import WorkoutSummary from './WorkoutSummary';
+import SleepTracker from './SleepTracker';
+import WeightTracker from './WeightTracker';
 import { BASE_API_URL } from '../context/AuthContext';
 
 const blue = '#1d2145';
@@ -40,7 +41,7 @@ function formatDateIST(date) {
   return `${year}-${month}-${day}`;
 }
 
-const GymDetails = ({ show, onClose }) => {
+const GymDetails = ({ show, onClose, inline = false }) => {
   const textRef = useRef(null);
   const { user } = useAuth();
   const [showProfile, setShowProfile] = useState(false);
@@ -53,93 +54,24 @@ const GymDetails = ({ show, onClose }) => {
   const [error, setError] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  const [showMotivation, setShowMotivation] = useState(true);
-  const [showSummary, setShowSummary] = useState(false);
+  const [showSummary, setShowSummary] = useState(true);
   const [workoutDates, setWorkoutDates] = useState({});
 
+  // In both inline and overlay modes, show all content immediately
+  // (we have removed the "YEAH BUDDY LIGHTWEIGHT" intro animation).
   useEffect(() => {
-    if (show && textRef.current) {
-      const text = "YEAH BUDDY LIGHTWEIGHT";
-      const words = text.split(' ');
-      
-      // Clear any existing content
-      textRef.current.innerHTML = '';
-      
-      // Create spans for each word with proper spacing
-      words.forEach((word, wordIndex) => {
-        const wordSpan = document.createElement('span');
-        wordSpan.style.display = 'inline-block';
-        wordSpan.style.marginRight = '40px'; // Add space between words
-        
-        // Add each character of the word
-        word.split('').forEach((char, charIndex) => {
-          const charSpan = document.createElement('span');
-          charSpan.textContent = char;
-          charSpan.style.opacity = '0';
-          charSpan.style.display = 'inline-block';
-          charSpan.style.transform = 'translateY(20px)';
-          wordSpan.appendChild(charSpan);
-        });
-        
-        textRef.current.appendChild(wordSpan);
-      });
+    setShowSummary(true);
+    setShowCalendar(true);
+    setShowDietPlan(true);
+  }, []);
 
-      // Add initial delay before starting animations
-      setTimeout(() => {
-        // Initial animation - fade in and move up
-        gsap.to(textRef.current.querySelectorAll('span span'), {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.01,
-          ease: "power2.out",
-          onComplete: () => {
-            // Color change animation
-            gsap.to(textRef.current.querySelectorAll('span span'), {
-              color: "#d62e49",
-              duration: 0.5,
-              stagger: 0.04,
-              ease: "power2.inOut",
-              onComplete: () => {
-                // Fade out animation
-                gsap.to(textRef.current.querySelectorAll('span span'), {
-                  opacity: 0,
-                  y: -20,
-                  duration: 0.8,
-                  stagger: 0.04,
-                  ease: "power2.in",
-                  onComplete: () => {
-                    setShowMotivation(false);
-                    // Show username immediately after motivation text
-                    setTimeout(() => {
-                      // Show summary after username
-                      setTimeout(() => {
-                        setShowSummary(true);
-                        // Show calendar after summary
-                        setTimeout(() => {
-                          setShowCalendar(true);
-                          // Show diet plan last
-                          setTimeout(() => {
-                            setShowDietPlan(true);
-                          }, 1000);
-                        }, 1000);
-                      }, 1000);
-                    }, 500);
-                  }
-                });
-              }
-            });
-          }
-        });
-      }, 300);
-    }
-  }, [show]);
+  const isActive = inline || show;
 
   useEffect(() => {
-    if (show) {
+    if (isActive) {
       fetchUserProfile();
     }
-  }, [show]);
+  }, [isActive]);
 
   const fetchWorkoutDates = async (date = new Date()) => {
     try {
@@ -180,17 +112,17 @@ const GymDetails = ({ show, onClose }) => {
 
   // Initial fetch when component mounts
   useEffect(() => {
-    if (show) {
+    if (isActive) {
       fetchWorkoutDates(selectedDate);
     }
-  }, [show]);
+  }, [isActive]);
 
   // Fetch when selected date changes
   useEffect(() => {
-    if (show) {
+    if (isActive) {
       fetchWorkoutDates(selectedDate);
     }
-  }, [selectedDate, show]);
+  }, [selectedDate, isActive]);
 
   const handleDateChange = (date) => {
     // Don't allow selecting future dates
@@ -268,8 +200,8 @@ const GymDetails = ({ show, onClose }) => {
   };
 
   const tileClassName = ({ date }) => {
-    // Use UTC date string for key, matching backend
-    const dateStr = date.toISOString().split('T')[0];
+    // Use local date string so calendar tile matches the day the user sees (backend returns YYYY-MM-DD for logged day)
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const dayData = workoutDates[dateStr];
     if (!dayData) return '';
     if (dayData.hasWorkout && dayData.hasCardio) {
@@ -304,35 +236,20 @@ const GymDetails = ({ show, onClose }) => {
   };
 
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          className="fixed inset-0 z-[10000] flex flex-col items-start justify-start overflow-y-auto"
+    <div>
+      {isActive && (
+        <div
+          className={
+            inline
+              ? "w-full flex flex-col items-start justify-start"
+              : "fixed inset-0 z-[10000] flex flex-col items-start justify-start overflow-y-auto"
+          }
           initial="initial"
           animate="animate"
           exit="exit"
           variants={overlayVariants}
-          style={{ background: blue }}
+          style={inline ? undefined : { background: blue }}
         >
-          {/* Motivation Text Animation */}
-          <AnimatePresence>
-            {showMotivation && (
-              <motion.div
-                className="fixed inset-0 flex flex-col items-center justify-center ml-16"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <h1 
-                  ref={textRef}
-                  className="text-[110px] font-bold text-white tracking-wider"
-                  style={{
-                    textShadow: '0 0 2px #d62e49'
-                  }}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           <div className="fixed top-10 group right-10 z-50">
             <div 
@@ -358,54 +275,39 @@ const GymDetails = ({ show, onClose }) => {
             </div>
           </div>
 
-          {/* Hello Username - Only show after motivation text disappears */}
-          <AnimatePresence>
-            {!showMotivation && (
-              <motion.div
-                className="w-full flex flex-col items-start px-24 mt-24"
-                variants={dropVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-              >
-                <h1 className="text-5xl font-bold text-white mb-2">
-                  Hello, {userProfile?.username || user?.username || 'User'}
-                </h1>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           <AnimatePresence>
             {showSummary && (
-              <motion.div
-                className="w-full px-24 mt-12 mb-12"
+              <div
+                className="w-full px-6 md:px-10 mb-8"
                 variants={sectionVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
               >
                 <WorkoutSummary />
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
 
           <AnimatePresence>
             {showCalendar && (
-              <motion.div
-                className="w-full px-24 flex"
+              <div
+                className="w-full px-6 md:px-10 flex flex-col lg:flex-row gap-6"
                 variants={sectionVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
               >
-                <WorkoutDetails date={selectedDate} />
-
-                <div className="w-1/3 ml-16">
-                  <div className="">
+                <div className="flex flex-col gap-6 w-full">
+                <div className="flex gap-6 w-full">
+                  <div className="w-3/5">
+                    <WorkoutDetails date={selectedDate} />
+                  </div>
+                  <div className="w-2/5">
                     <Calendar
                       onChange={handleDateChange}
                       value={selectedDate}
-                      className="custom-calendar"
+                      className="custom-calendar w-full"
                       tileClassName={tileClassName}
                       tileDisabled={tileDisabled}
                       onActiveStartDateChange={handleActiveStartDateChange}
@@ -419,23 +321,32 @@ const GymDetails = ({ show, onClose }) => {
                     />
                   </div>
                 </div>
+                <div className="flex gap-6 w-full">
+                  <div className="w-3/5 h-full">
+                    <WeightTracker />
+                  </div>
+                  <div className="w-2/5 h-full">
+                    <SleepTracker />
+                  </div>
+                </div>
+              </div>
 
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
 
           {/* Diet Plan Section */}
-          <AnimatePresence>
+          {/* <AnimatePresence>
             {showDietPlan && (
               <motion.div
-                className="w-full px-24 mt-12 mb-24"
+                className="w-full px-6 md:px-10 mt-10 mb-16"
                 variants={sectionVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
               >
-                <h2 className="text-3xl font-semibold text-white mb-6">Your Personalized Diet Plan</h2>
-                <div className="bg-[#11113a] p-6 rounded-2xl shadow-lg">
+                <h2 className="text-2xl font-semibold text-white mb-4">Your Personalized Diet Plan</h2>
+                <div className="bg-[#11113a] p-5 rounded-2xl shadow-lg">
                   {isLoadingProfile ? (
                     <div className="flex justify-center items-center h-64">
                       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d62e49]"></div>
@@ -474,7 +385,7 @@ const GymDetails = ({ show, onClose }) => {
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </AnimatePresence> */}
 
           {/* Profile Modal */}
           <Profile 
@@ -483,9 +394,9 @@ const GymDetails = ({ show, onClose }) => {
             triggerPosition={profileTriggerPosition}
             onProfileUpdate={handleProfileUpdate}
           />
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </div>
   );
 };
 

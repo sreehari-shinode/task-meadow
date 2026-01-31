@@ -7,7 +7,7 @@ import { BsArrowRight } from "react-icons/bs";
 import GymDetails from "./GymDetails";
 import { useAuth } from "../context/AuthContext";
 
-const GymTracker = ({ headerHeight }) => {
+const GymTracker = ({ headerHeight, compact = false }) => {
   const { scrollYProgress } = useScroll();
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
@@ -68,35 +68,54 @@ const GymTracker = ({ headerHeight }) => {
 
   return (
     <section
-      className="relative w-full mt-48 flex flex-col md:flex-row justify-between"
-      style={{ paddingTop: `${headerHeight}px` }}
+      className={
+        compact
+          ? "relative w-full"
+          : "relative w-full mt-48 flex flex-col md:flex-row justify-between"
+      }
+      style={compact ? undefined : { paddingTop: `${headerHeight}px` }}
     >
-      {/* Image Container with Scroll-based Animation */}
-      <motion.div
-        className="relative w-full md:w-[35%] overflow-visible"
-        style={{ 
-          height: "80vh",
-          position: "relative"
-        }}
-      >
-        <motion.div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat ml-24 rounded-3xl"
-          style={{
-            backgroundImage: `url(${workoutImage})`,
-            backgroundPosition: '60% center',
-            opacity: imageLoaded ? 1 : 0,
-            height: "100%",
-            width: "100%",
-            maskImage: shouldRevealImage ? "none" : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
-            WebkitMaskImage: shouldRevealImage ? "none" : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
-            transition: "opacity 0.3s ease-out, mask-image 0.5s ease-out, -webkit-mask-image 0.5s ease-out"
-          }}
-        />
-      </motion.div>
+      {!compact && (
+        <>
+          {/* Image Container with Scroll-based Animation */}
+          <div
+            className="relative w-full md:w-[35%] overflow-visible"
+            style={{
+              height: "80vh",
+              position: "relative",
+            }}
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat ml-24 rounded-3xl"
+              style={{
+                backgroundImage: `url(${workoutImage})`,
+                backgroundPosition: "60% center",
+                opacity: imageLoaded ? 1 : 0,
+                height: "100%",
+                width: "100%",
+                maskImage: shouldRevealImage
+                  ? "none"
+                  : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
+                WebkitMaskImage: shouldRevealImage
+                  ? "none"
+                  : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
+                transition:
+                  "opacity 0.3s ease-out, mask-image 0.5s ease-out, -webkit-mask-image 0.5s ease-out",
+              }}
+            />
+          </div>
+        </>
+      )}
 
       {/* Right Content Side */}
-      <div className="w-full md:w-[60%] text-white flex flex-col justify-start px-8 !ml-24">
-        <motion.div
+      <div
+        className={
+          compact
+            ? "w-full text-white flex flex-col justify-start"
+            : "w-full md:w-[60%] text-white flex flex-col justify-start px-8 !ml-24"
+        }
+      >
+        <div
           className="flex flex-col"
           style={{
             opacity: textOpacity,
@@ -107,7 +126,11 @@ const GymTracker = ({ headerHeight }) => {
           transition={{ duration: 0.5 }}
         >
           <div 
-            className="text-[80px] font-semibold whitespace-nowrap mb-8 transition-colors duration-300 hover:text-[#d62e49] cursor-pointer"
+            className={
+              compact
+                ? "text-5xl font-semibold mb-6 transition-colors duration-300 hover:text-[#d62e49] cursor-pointer"
+                : "text-[80px] font-semibold whitespace-nowrap mb-8 transition-colors duration-300 hover:text-[#d62e49] cursor-pointer"
+            }
             onClick={() => setShowGymDetails(true)}
           >
             GYM TRACKER
@@ -115,7 +138,7 @@ const GymTracker = ({ headerHeight }) => {
 
           {/* Calendar Component */}
           <motion.div
-            className="flex flex-col items-start mb-24"
+            className={compact ? "flex flex-col items-start mb-8" : "flex flex-col items-start mb-24"}
             initial={{ opacity: 0, y: 100 }}
             animate={showCalendar ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
             transition={{ duration: 1, ease: "easeOut" }}
@@ -144,13 +167,13 @@ const GymTracker = ({ headerHeight }) => {
             </div>
           </motion.div>
 
-          <div className="flex items-center justify-end w-full group">
+          <div className={compact ? "flex items-center justify-start w-full group" : "flex items-center justify-end w-full group"}>
             <div onClick={() => setShowGymDetails(true)} className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-pointer group-hover:shadow-xl transition-all duration-500 relative overflow-hidden group-hover:scale-100 bg-white mr-16">
               <div className="absolute inset-0 bg-[#d62e49] transform scale-0 group-hover:scale-100 transition-transform duration-500 ease-out rounded-full"></div>
               <BsArrowRight className="text-[#d62e49] group-hover:text-white w-6 h-6 relative z-10 transition-colors duration-500" />
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <GymDetails 

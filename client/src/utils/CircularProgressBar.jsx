@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const CustomCircularProgress = ({ value = 70, label = 'W1', isSelected = false, days = 0 }) => {
-  const radius = 36;
+  const radius = 28;
   const circumference = 2 * Math.PI * radius;
   const [animatedValue, setAnimatedValue] = useState(0);
 
@@ -40,7 +40,7 @@ const CustomCircularProgress = ({ value = 70, label = 'W1', isSelected = false, 
           cy="40"
           r={radius}
           stroke="rgba(255,255,255,0.1)"
-          strokeWidth="8"
+          strokeWidth="6"
           fill="transparent"
         />
         <circle
@@ -48,7 +48,7 @@ const CustomCircularProgress = ({ value = 70, label = 'W1', isSelected = false, 
           cy="40"
           r={radius}
           stroke={progressColor}
-          strokeWidth="8"
+          strokeWidth="6"
           fill="transparent"
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
@@ -68,7 +68,7 @@ const CustomCircularProgress = ({ value = 70, label = 'W1', isSelected = false, 
       >
         <span
           className={`
-            text-lg font-semibold transition-colors duration-300
+            text-md font-semibold transition-colors duration-300
             ${isSelected ? 'text-white' : 'group-hover:text-white text-white/50'}
           `}
         >

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Profile from "./Profile";
 
-const StickyHeader = ({ onHeightChange }) => {
+const StickyHeader = ({ onHeightChange, onShrinkChange }) => {
   const maxHeight = window.innerHeight;
   const minHeight = 80;
   const [scrollY, setScrollY] = useState(0);
   const [isShrunk, setIsShrunk] = useState(false);
   const [locked, setLocked] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
   const [profileTriggerPosition, setProfileTriggerPosition] = useState(null);
 
@@ -16,18 +17,22 @@ const StickyHeader = ({ onHeightChange }) => {
       const currentScroll = window.scrollY;
       setScrollY(currentScroll);
 
-      if (currentScroll >= maxHeight - minHeight) {
-        setIsShrunk(true);
-        setLocked(true);
-      } else {
-        setIsShrunk(false);
-        setLocked(false);
+      const shouldShrink = currentScroll >= maxHeight - minHeight;
+      setIsShrunk(shouldShrink);
+      setLocked(shouldShrink);
+
+      // Show the scroll-down button only when we are near the top
+      // (hero visible). Hide it once we've scrolled down.
+      setShowScrollButton(currentScroll < maxHeight * 0.1);
+
+      if (onShrinkChange) {
+        onShrinkChange(shouldShrink);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [maxHeight, minHeight]);
+  }, [maxHeight, minHeight, onShrinkChange]);
 
   const calculatedHeight = isShrunk
     ? minHeight
@@ -74,6 +79,27 @@ const StickyHeader = ({ onHeightChange }) => {
     setShowProfile(true);
   };
 
+  const handleScrollDownClick = () => {
+    // Smoothly scroll to (and slightly past) the main tabs section
+    // so that at least ~85vh of tab content is in view.
+    const target = document.getElementById("home-tabs-root");
+    // Hide the button immediately on click; it will only reappear
+    // once the user scrolls back up to the hero area.
+    setShowScrollButton(false);
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      const currentScroll = window.scrollY;
+      // Scroll so that about 75vh of tab content is visible
+      const extraOffset = window.innerHeight * 0.75;
+      const targetY = currentScroll + rect.top + extraOffset;
+      window.scrollTo({ top: targetY, behavior: "smooth" });
+    } else {
+      // Fallback: scroll a bit further down the page
+      const targetY = window.innerHeight * 1.5;
+      window.scrollTo({ top: targetY, behavior: "smooth" });
+    }
+  };
+
   return (
     <>
       {/* Fixed Profile Icon */}
@@ -101,8 +127,34 @@ const StickyHeader = ({ onHeightChange }) => {
         </div>
       </div>
 
+      {/* Center Bottom Scroll-Down Button (visible only near top / hero) */}
+      {showScrollButton && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+          <div
+            className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-all duration-500 relative overflow-hidden bg-white group"
+            onClick={handleScrollDownClick}
+          >
+            <div className="absolute inset-0 bg-[#d62e49] transform scale-0 group-hover:scale-100 transition-transform duration-500 ease-out rounded-full" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-[#d62e49] group-hover:text-white relative z-10 transition-colors duration-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        </div>
+      )}
+
       <motion.header
-        className="fixed top-0 left-0 right-0 z-40 overflow-hidden"
+        className="fixed top-0 left-0 right-0 z-40 overflow-hidden pointer-events-none"
         style={{ 
           height: calculatedHeight,
           backgroundColor: 'transparent',

@@ -36,9 +36,9 @@ router.get('/summary', auth, async (req, res) => {
       });
     }
 
-    // Calculate start and end dates for the selected month
-    const startDate = new Date(year, month - 1, 1); // First day of month
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999); // Last day of month
+    // Use UTC so we match workouts stored with UTC dates
+    const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
     console.log('📅 Date range:', {
       startDate: startDate.toISOString(),
@@ -286,16 +286,30 @@ router.get('/summary', auth, async (req, res) => {
   }
 });
 
-// GET workout for specific date
+// GET workout for specific date (accepts YYYY-MM-DD or ISO string)
 router.get('/:date', auth, async (req, res) => {
   try {
-    const date = new Date(req.params.date);
+    const param = req.params.date;
+    let startOfDay;
+    let endOfDay;
+    if (param && param.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [y, m, d] = param.split('-').map(Number);
+      startOfDay = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+      endOfDay = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
+    } else {
+      const date = new Date(param);
+      if (Number.isNaN(date.getTime())) {
+        return res.status(400).json({ message: 'Invalid date' });
+      }
+      const y = date.getUTCFullYear();
+      const m = date.getUTCMonth();
+      const d = date.getUTCDate();
+      startOfDay = new Date(Date.UTC(y, m, d, 0, 0, 0, 0));
+      endOfDay = new Date(Date.UTC(y, m, d, 23, 59, 59, 999));
+    }
     const workout = await Workout.findOne({
       userId: req.user.id,
-      date: {
-        $gte: new Date(date.setHours(0, 0, 0)),
-        $lt: new Date(date.setHours(23, 59, 59))
-      }
+      date: { $gte: startOfDay, $lte: endOfDay }
     });
 
     if (!workout) {
@@ -309,33 +323,30 @@ router.get('/:date', auth, async (req, res) => {
   }
 });
 
-// POST create/update workout
+// POST create/update workout — use UTC date to match GET
 router.post('/', auth, async (req, res) => {
   try {
-    const { date, musclesHit, duration, cardio, personalRecords, additionalNotes } = req.body;
+    const { date, musclesHit, duration, intensity, cardio, personalRecords, additionalNotes } = req.body;
 
     if (!date || !date.match(/^\d{4}-\d{2}-\d{2}$/)) {
       return res.status(400).json({ message: 'Invalid date format. Expected YYYY-MM-DD' });
     }
 
-    const workoutDate = new Date(date);
-    if (isNaN(workoutDate.getTime())) {
-      return res.status(400).json({ message: 'Invalid date' });
-    }
+    const [y, m, d] = date.split('-').map(Number);
+    const startOfDay = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
 
-    workoutDate.setHours(0, 0, 0, 0);
+    const validIntensity = (intensity && ['Low', 'Medium', 'High'].includes(String(intensity).trim())) ? String(intensity).trim() : 'Medium';
 
     let workout = await Workout.findOne({
       userId: req.user.id,
-      date: {
-        $gte: workoutDate,
-        $lt: new Date(workoutDate.getTime() + 24 * 60 * 60 * 1000)
-      }
+      date: { $gte: startOfDay, $lte: endOfDay }
     });
 
     if (workout) {
       workout.musclesHit = musclesHit;
       workout.duration = duration;
+      workout.intensity = validIntensity;
       // Only update cardio if it has activity or duration
       if (cardio && (cardio.activity || cardio.duration)) {
         workout.cardio = cardio;
@@ -350,9 +361,10 @@ router.post('/', auth, async (req, res) => {
 
     workout = new Workout({
       userId: req.user.id,
-      date: workoutDate,
+      date: startOfDay,
       musclesHit,
       duration,
+      intensity: validIntensity,
       cardio: (cardio && (cardio.activity || cardio.duration)) ? cardio : null,
       personalRecords,
       additionalNotes
@@ -366,16 +378,30 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// DELETE workout by date
+// DELETE workout by date (accepts YYYY-MM-DD or ISO string)
 router.delete('/:date', auth, async (req, res) => {
   try {
-    const date = new Date(req.params.date);
+    const param = req.params.date;
+    let startOfDay;
+    let endOfDay;
+    if (param && param.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [y, m, d] = param.split('-').map(Number);
+      startOfDay = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+      endOfDay = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
+    } else {
+      const date = new Date(param);
+      if (Number.isNaN(date.getTime())) {
+        return res.status(400).json({ message: 'Invalid date' });
+      }
+      const y = date.getUTCFullYear();
+      const m = date.getUTCMonth();
+      const d = date.getUTCDate();
+      startOfDay = new Date(Date.UTC(y, m, d, 0, 0, 0, 0));
+      endOfDay = new Date(Date.UTC(y, m, d, 23, 59, 59, 999));
+    }
     const workout = await Workout.findOneAndDelete({
       userId: req.user.id,
-      date: {
-        $gte: new Date(date.setHours(0, 0, 0)),
-        $lt: new Date(date.setHours(23, 59, 59))
-      }
+      date: { $gte: startOfDay, $lte: endOfDay }
     });
 
     if (!workout) {

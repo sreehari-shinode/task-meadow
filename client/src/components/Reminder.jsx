@@ -4,7 +4,7 @@ import { BsArrowRight } from "react-icons/bs";
 import workoutImage from "../assets/workout.jpg";
 import RemindersFullScreen from './RemindersFullScreen';
 
-const Reminders = ({ headerHeight }) => {
+const Reminders = ({ headerHeight, compact = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef(null);
   const { scrollYProgress } = useScroll();
@@ -62,34 +62,53 @@ const Reminders = ({ headerHeight }) => {
 
   return (
     <section 
-      className="relative mt-60 w-full flex flex-col md:flex-row-reverse px-24 justify-between"
-      style={{ paddingTop: `${headerHeight}px` }}
+      className={
+        compact
+          ? "relative w-full"
+          : "relative mt-60 w-full flex flex-col md:flex-row-reverse px-24 justify-between"
+      }
+      style={compact ? undefined : { paddingTop: `${headerHeight}px` }}
     >
-      {/* Image Container with Scroll-based Animation */}
-      <motion.div
-        className="relative w-full md:w-[35%] overflow-visible"
-        style={{ 
-          height: "80vh",
-          position: "relative"
-        }}
-      >
-        <motion.div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat mr-24 rounded-3xl"
-          style={{
-            backgroundImage: `url(${workoutImage})`,
-            backgroundPosition: '40% center',
-            opacity: imageLoaded ? 1 : 0,
-            height: "100%",
-            width: "100%",
-            maskImage: shouldRevealImage ? "none" : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
-            WebkitMaskImage: shouldRevealImage ? "none" : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
-            transition: "opacity 0.3s ease-out, mask-image 0.5s ease-out, -webkit-mask-image 0.5s ease-out"
-          }}
-        />
-      </motion.div>
+      {!compact && (
+        <>
+          {/* Image Container with Scroll-based Animation */}
+          <motion.div
+            className="relative w-full md:w-[35%] overflow-visible"
+            style={{
+              height: "80vh",
+              position: "relative",
+            }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat mr-24 rounded-3xl"
+              style={{
+                backgroundImage: `url(${workoutImage})`,
+                backgroundPosition: "40% center",
+                opacity: imageLoaded ? 1 : 0,
+                height: "100%",
+                width: "100%",
+                maskImage: shouldRevealImage
+                  ? "none"
+                  : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
+                WebkitMaskImage: shouldRevealImage
+                  ? "none"
+                  : "linear-gradient(to bottom, black 0%, black 20%, transparent 100%)",
+                transition:
+                  "opacity 0.3s ease-out, mask-image 0.5s ease-out, -webkit-mask-image 0.5s ease-out",
+              }}
+            />
+          </motion.div>
+        </>
+      )}
 
       {/* Left Content Side */}
-      <div className="w-full md:w-[60%] text-white flex flex-col justify-start px-8 mr-auto">
+      <div
+        className={
+          compact
+            ? "w-full text-white flex flex-col justify-start"
+            : "w-full md:w-[60%] text-white flex flex-col justify-start px-8 mr-auto"
+        }
+      >
         <motion.div
           className="flex flex-col"
           style={{
@@ -101,14 +120,22 @@ const Reminders = ({ headerHeight }) => {
           }}
         >
           <div 
-            className="text-[80px] font-semibold whitespace-nowrap mb-24 transition-colors duration-300 hover:text-[#d62e49] cursor-pointer"
+            className={
+              compact
+                ? "text-5xl font-semibold mb-6 transition-colors duration-300 hover:text-[#d62e49] cursor-pointer"
+                : "text-[80px] font-semibold whitespace-nowrap mb-24 transition-colors duration-300 hover:text-[#d62e49] cursor-pointer"
+            }
             onClick={() => setShowRemindersFullScreen(true)}
           >
             REMINDERS
           </div>
           <div className="flex items-center justify-start w-full">
             <div
-              className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-all duration-500 relative overflow-hidden group bg-white ml-16"
+              className={
+                compact
+                  ? "w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-all duration-500 relative overflow-hidden group bg-white"
+                  : "w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-all duration-500 relative overflow-hidden group bg-white ml-16"
+              }
               onClick={() => setShowRemindersFullScreen(true)}
             >
               <div className="absolute inset-0 bg-[#d62e49] transform scale-0 group-hover:scale-100 transition-transform duration-500 ease-out rounded-full"></div>
@@ -153,7 +180,10 @@ const Reminders = ({ headerHeight }) => {
       {/* Conditionally render RemindersFullScreen overlay (using AnimatePresence) */}
       <AnimatePresence>
         {showRemindersFullScreen && (
-          <RemindersFullScreen onClose={() => setShowRemindersFullScreen(false)} />
+          <RemindersFullScreen
+            show={showRemindersFullScreen}
+            onClose={() => setShowRemindersFullScreen(false)}
+          />
         )}
       </AnimatePresence>
     </section>

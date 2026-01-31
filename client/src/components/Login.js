@@ -38,9 +38,9 @@ const Login = () => {
     
     if (result.success) {
       setMessage(result.message);
-      // Navigate to dashboard after successful login
+      // Navigate to home after successful login
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/');
       }, 1000);
     } else {
       setMessage(result.message);

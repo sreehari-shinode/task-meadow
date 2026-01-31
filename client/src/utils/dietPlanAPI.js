@@ -110,7 +110,7 @@ const mealTemplates = {
 
 const generateFallbackDietPlan = (userProfile) => {
   const meals = [];
-  const calorieGoal = userProfile.calorieGoal || 2000;
+  // const calorieGoal = userProfile.calorieGoal || 2000;
   const mealsPerDay = userProfile.mealsPerDay || 5;
   
   // Add breakfast

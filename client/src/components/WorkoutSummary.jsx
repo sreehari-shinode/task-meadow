@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MenuItem, Select, FormControl, Chip, Tooltip as MuiTooltip } from '@mui/material';
+import {  AnimatePresence } from 'framer-motion';
+import { MenuItem, Select, FormControl, Chip } from '@mui/material';
 import { IoMdClock } from "react-icons/io";
 import TimeRuler from '../utils/TimeRuler';
 import { IoCalendar } from "react-icons/io5";
 import { FaDumbbell } from "react-icons/fa6";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList, PieChart, Pie, Cell as PieCell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import Tooltip2 from '@mui/material/Tooltip';
-import { FaHeartbeat } from "react-icons/fa";
 import CircularProgressBar from '../utils/CircularProgressBar';
 import { IoCheckmarkCircle, IoCloseCircle } from "react-icons/io5";
 import { BASE_API_URL } from '../context/AuthContext';
@@ -24,7 +23,7 @@ const WeeklyAnalysis = ({ weeklyBreakdown }) => {
 
   if (!weeklyBreakdown || weeklyBreakdown.length === 0) {
     return (
-      <motion.div
+      <div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mt-16 relative"
@@ -43,15 +42,15 @@ const WeeklyAnalysis = ({ weeklyBreakdown }) => {
             </div>
           ))}
         </div>
-      </motion.div>
+      </div>
     );
   }
 
-  const getProgressColor = (days) => {
-    if (days >= 5) return '#22c55e';
-    if (days >= 3) return '#f59e0b';
-    return '#d62e49';
-  };
+  // const getProgressColor = (days) => {
+  //   if (days >= 5) return '#22c55e';
+  //   if (days >= 3) return '#f59e0b';
+  //   return '#d62e49';
+  // };
   const formatMinutes = (min) => {
     const hr = Math.floor(min / 60);
     const mins = min % 60;
@@ -60,51 +59,51 @@ const WeeklyAnalysis = ({ weeklyBreakdown }) => {
     return `${mins} min`;
   };
 
-  const handleSelect = (index) => {
-    setSelectedWeek(selectedWeek === index ? null : index);
-  };
+  // const handleSelect = (index) => {
+  //   setSelectedWeek(selectedWeek === index ? null : index);
+  // };
 
-  const WeekButton = ({ week, index, isSelected }) => (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => setSelectedWeek(selectedWeek === index ? null : index)}
-      className={`relative group ${isSelected ? 'z-10' : ''}`}
-    >
-      <div className="relative">
-        <CircularProgressBar
-          variant="determinate"
-          value={(week.activeDays / 7) * 100}
-          size={80}
-          thickness={4}
-          sx={{
-            color: week.activeDays === 0 ? 'rgba(255, 255, 255, 0.1)' : getProgressColor(week.activeDays),
-            '& .MuiCircularProgress-circle': {
-              strokeLinecap: 'round',
-            },
-            '& .MuiCircularProgress-track': {
-              stroke: 'rgba(255, 255, 255, 0.1)',
-              strokeWidth: week.activeDays === 0 ? 1 : 4,
-            },
-            '&:hover': {
-              color: week.activeDays === 0 ? 'rgba(255, 255, 255, 0.2)' : '#d62e49',
-            },
-          }}
-          className="group-hover:opacity-80 transition-colors duration-200"
-        />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-          <span className={`text-xl font-semibold ${week.activeDays === 0 ? 'text-white/40' : 'text-white'} group-hover:text-[#d62e49] transition-colors duration-200`}>
-            W{index + 1}
-          </span>
-        </div>
-      </div>
-      <div className="mt-2 text-center">
-        <span className={`text-sm font-medium ${week.activeDays === 0 ? 'text-white/40' : 'text-white/60'} group-hover:text-white transition-colors duration-200`}>
-          {week.activeDays} days
-        </span>
-      </div>
-    </motion.button>
-  );
+  // const WeekButton = ({ week, index, isSelected }) => (
+  //   <motion.button
+  //     whileHover={{ scale: 1.05 }}
+  //     whileTap={{ scale: 0.95 }}
+  //     onClick={() => setSelectedWeek(selectedWeek === index ? null : index)}
+  //     className={`relative group ${isSelected ? 'z-10' : ''}`}
+  //   >
+  //     <div className="relative">
+  //       <CircularProgressBar
+  //         variant="determinate"
+  //         value={(week.activeDays / 7) * 100}
+  //         size={80}
+  //         thickness={4}
+  //         sx={{
+  //           color: week.activeDays === 0 ? 'rgba(255, 255, 255, 0.1)' : getProgressColor(week.activeDays),
+  //           '& .MuiCircularProgress-circle': {
+  //             strokeLinecap: 'round',
+  //           },
+  //           '& .MuiCircularProgress-track': {
+  //             stroke: 'rgba(255, 255, 255, 0.1)',
+  //             strokeWidth: week.activeDays === 0 ? 1 : 4,
+  //           },
+  //           '&:hover': {
+  //             color: week.activeDays === 0 ? 'rgba(255, 255, 255, 0.2)' : '#d62e49',
+  //           },
+  //         }}
+  //         className="group-hover:opacity-80 transition-colors duration-200"
+  //       />
+  //       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+  //         <span className={`text-xl font-semibold ${week.activeDays === 0 ? 'text-white/40' : 'text-white'} group-hover:text-[#d62e49] transition-colors duration-200`}>
+  //           W{index + 1}
+  //         </span>
+  //       </div>
+  //     </div>
+  //     <div className="mt-2 text-center">
+  //       <span className={`text-sm font-medium ${week.activeDays === 0 ? 'text-white/40' : 'text-white/60'} group-hover:text-white transition-colors duration-200`}>
+  //         {week.activeDays} days
+  //       </span>
+  //     </div>
+  //   </motion.button>
+  // );
 
   const WeekDetails = ({ week, index, onClose }) => {
     const muscleGroups = ['Chest', 'Back', 'Biceps', 'Triceps', 'Legs', 'Core', 'Shoulder'];
@@ -115,10 +114,10 @@ const WeeklyAnalysis = ({ weeklyBreakdown }) => {
     };
 
     const hitMuscles = getHitMuscles(week.musclesHit);
-    const missedMuscles = muscleGroups.filter(muscle => !hitMuscles.includes(muscle.toLowerCase()));
+    // const missedMuscles = muscleGroups.filter(muscle => !hitMuscles.includes(muscle.toLowerCase()));
 
     return (
-      <motion.div
+      <div
         initial={{ height: 0, opacity: 0 }}
         animate={{ 
           height: "auto",
@@ -205,12 +204,12 @@ const WeeklyAnalysis = ({ weeklyBreakdown }) => {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   };
 
   return (
-    <motion.div
+    <div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mt-8 relative"
@@ -245,7 +244,7 @@ const WeeklyAnalysis = ({ weeklyBreakdown }) => {
           />
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
 
@@ -392,16 +391,16 @@ const WorkoutSummary = () => {
   };
 
   // Helper to get comma-separated muscle names with ellipsis if too many
-  const getMuscleNames = (muscles, count = 2) => {
-    if (!muscles || muscles.length === 0) return '-';
-    const names = muscles.slice(0, count).map(m => m.name);
-    return muscles.length > count ? names.join(', ') + ', ...' : names.join(', ');
-  };
-  const getLeastMuscleNames = (muscles, count = 2) => {
-    if (!muscles || muscles.length === 0) return '-';
-    const names = muscles.slice(-count).map(m => m.name);
-    return muscles.length > count ? names.join(', ') + ', ...' : names.join(', ');
-  };
+  // const getMuscleNames = (muscles, count = 2) => {
+  //   if (!muscles || muscles.length === 0) return '-';
+  //   const names = muscles.slice(0, count).map(m => m.name);
+  //   return muscles.length > count ? names.join(', ') + ', ...' : names.join(', ');
+  // };
+  // const getLeastMuscleNames = (muscles, count = 2) => {
+  //   if (!muscles || muscles.length === 0) return '-';
+  //   const names = muscles.slice(-count).map(m => m.name);
+  //   return muscles.length > count ? names.join(', ') + ', ...' : names.join(', ');
+  // };
 
   // Get all most hit muscles (max count)
   const getMostHitMuscles = (muscles) => {
@@ -417,70 +416,68 @@ const WorkoutSummary = () => {
   };
 
   return (
-    <motion.div
+    <div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="w-full"
       style={fontStyles}
     >
-      <div className="flex items-center items-center mb-8">
-        <h2 className="text-5xl font-semibold text-white tracking-tight">Workout Summary</h2>
-        <div className=" mt-[6px]">
-        <FormControl fullWidth variant="standard">
-          <Select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            disableUnderline
-            IconComponent={() => null}
-            sx={{
-              ...fontStyles,
-              fontSize: '2.85rem',
-              fontWeight: 600,
-              color: 'white',
-              backgroundColor: 'transparent',
-              borderRadius: '0.75rem',
-              padding: '12px',
-              cursor: 'pointer',
-              '&:hover': {
-                color: '#d62e49',
-                '& .MuiSelect-icon': {
-                  opacity: 1,
-                }
-              },
-              '& .MuiSelect-icon': {
-                opacity: 0,
-                transition: 'opacity 0.2s ease-in-out',
-              },
-              '& .MuiPaper-root': {
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(4px)',
-                borderRadius: '0.75rem',
-              },
-            }}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  ...fontStyles,
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  color: 'white',
-                  backdropFilter: 'blur(4px)',
-                  borderRadius: '0.75rem',
-                  '& .MuiMenuItem-root': {
-                    fontSize: '1.25rem',
-                    padding: '12px 16px',
-                    fontFamily: 'inherit',
-                  }
-                }
-              }
-            }}
-          >
-            {getMonthOptions().map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      {/* Compact header similar to DailyHabits */}
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-6 gap-3">
+        <div>
+          <h2 className="text-3xl font-semibold text-white tracking-tight">
+            Workout Summary
+          </h2>
+          <p className="text-xs text-white/60 mt-1">
+            Overview of your training for the selected month.
+          </p>
+        </div>
+        <div className="md:min-w-[220px]">
+          <FormControl fullWidth variant="standard">
+            <Select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              disableUnderline
+              IconComponent={() => null}
+              sx={{
+                ...fontStyles,
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                color: 'white',
+                backgroundColor: 'rgba(15,23,42,0.7)',
+                borderRadius: '9999px',
+                paddingX: '14px',
+                paddingY: '6px',
+                '& .MuiSelect-select': {
+                  paddingRight: 0,
+                  paddingLeft: 0,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                },
+              }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    ...fontStyles,
+                    backgroundColor: 'rgba(15,23,42,0.95)',
+                    color: 'white',
+                    borderRadius: '0.75rem',
+                    '& .MuiMenuItem-root': {
+                      fontSize: '0.9rem',
+                      paddingY: 0.75,
+                      fontFamily: 'inherit',
+                    },
+                  },
+                },
+              }}
+            >
+              {getMonthOptions().map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </div>
       </div>
 
@@ -501,99 +498,99 @@ const WorkoutSummary = () => {
         </div>
       ) : summaryData && summaryData.monthlyStats ? (
         <>
-        <div className="flex w-full gap-12">
-          <div className="flex flex-col min-h-[220px] flex-1">
-            <IoMdClock className="w-12 h-12 text-[#d62e49]" />
-            <div className="flex items-center justify-between text-lg text-gray-200 mb-1 mt-8">
-                <p className='text-[16px] text-white/70'>total time<p className=" text-xl font-bold text-white">{formatMinutes(summaryData.monthlyStats.totalTime)}</p></p>
-                <p className='mr-12 text-[16px] text-white/70'>avg. time/day <p className="text-xl font-bold text-white">{formatMinutes(summaryData.monthlyStats.averageTimePerSession)}</p></p>
+        {/* Compact metric cards in a grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-6">
+          {/* Time card */}
+          <div className="flex flex-col bg-[#111338] border border-white/5 rounded-2xl px-4 py-4 gap-3">
+            <div className="flex items-center gap-3">
+              <IoMdClock className="w-6 h-6 text-[#d62e49]" />
+              <div className="text-xs uppercase tracking-wide text-white/60">
+                Time Spent
+              </div>
             </div>
-            <div className="mt-2 flex items-center">
+            <div className="flex items-center justify-between text-sm text-gray-200">
+              <div>
+                <div className="text-[11px] text-white/60">Total</div>
+                <div className="text-lg font-semibold text-white">
+                  {formatMinutes(summaryData.monthlyStats.totalTime)}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-[11px] text-white/60">Avg / session</div>
+                <div className="text-lg font-semibold text-white">
+                  {formatMinutes(summaryData.monthlyStats.averageTimePerSession)}
+                </div>
+              </div>
+            </div>
+            <div className="mt-2">
               <TimeRuler averageMinutes={summaryData.monthlyStats.averageTimePerSession} />
             </div>
           </div>
-          <div className="mx-12 flex items-center">
-            <div className="w-2 h-32 bg-white/10 rounded-full"></div>
-          </div>
 
-          <div className="flex flex-col h-[220px] justify-between flex-1">
-            <div>
-              <IoCalendar className="w-12 h-12 text-[#d62e49]" />
-              <div className="flex items-center justify-between text-lg text-gray-200 mb-1 mt-8">
-                  <p className='text-[16px] text-white/70'>
-                    strength sessions{' '}
-                    <p className="font-bold text-xl text-white">{summaryData.strengthDays ?? '-'} days</p>
-                  </p>
-                  <p className='mr-8 text-[16px] text-white/70'>
-                    cardio sessions{' '}
-                    <p className="font-bold text-xl text-white">{summaryData.cardioDays ?? '-'} days</p>
-                  </p>
+          {/* Days & frequency card */}
+          <div className="flex flex-col bg-[#111338] border border-white/5 rounded-2xl px-4 py-4 gap-3">
+            <div className="flex items-center gap-3">
+              <IoCalendar className="w-6 h-6 text-[#d62e49]" />
+              <div className="text-xs uppercase tracking-wide text-white/60">
+                Active Days
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-sm text-gray-200">
+              <div>
+                <div className="text-[11px] text-white/60">Strength days</div>
+                <div className="text-lg font-semibold text-white">
+                  {summaryData.strengthDays ?? '-'}
                 </div>
               </div>
-              <div className="relative mt-[60px] w-full max-w-md">
-                {/* Label above the bar, alignment depends on total days */}
-                {summaryData.monthlyStats.totalActiveDays < 15 ? (
-                  <div className="absolute -top-6 right-0 text-xs text-white/60 font-semibold select-none" style={{zIndex:2}}>
-                    total days
-                  </div>
-                ) : (
-                  <div className="absolute -top-6 left-0 text-xs text-white/60 font-semibold select-none" style={{zIndex:2}}>
-                    total days
+              <div className="text-right">
+                <div className="text-[11px] text-white/60">Cardio days</div>
+                <div className="text-lg font-semibold text-white">
+                  {summaryData.cardioDays ?? '-'}
+                </div>
+              </div>
             </div>
-                )}
-              <div className="relative h-4 bg-gray-800 rounded-full overflow-hidden">
+            <div className="relative mt-3">
+              {/* Label above the bar, alignment depends on total days */}
+              {summaryData.monthlyStats.totalActiveDays < 15 ? (
+                <div className="absolute -top-5 right-0 text-[10px] text-white/60 font-semibold select-none" style={{zIndex:2}}>
+                  total active days
+                </div>
+              ) : (
+                <div className="absolute -top-5 left-0 text-[10px] text-white/60 font-semibold select-none" style={{zIndex:2}}>
+                  total active days
+                </div>
+              )}
+              <div className="relative h-3 bg-gray-800 rounded-full overflow-hidden">
                 <div
-                  className="absolute top-0 left-0 h-4 bg-green-400 rounded-full transition-all duration-500"
+                  className="absolute top-0 left-0 h-3 bg-green-400 rounded-full transition-all duration-500"
                   style={{
                     width: `${(summaryData.monthlyStats.totalActiveDays / getDaysInMonth(selectedMonth)) * 100}%`,
                   }}
                 ></div>
-                <div className="flex items-center !justify-end">
-                  <div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2 px-[2px]">
-                    {[...Array(Math.ceil(getDaysInMonth(selectedMonth) / 2))].map((_, i, arr) => {
-                      const dayCount = (i + 1) * 2;
-                      const isFilled = dayCount <= summaryData.monthlyStats.totalActiveDays;
-                      const isLastFilled =
-                        dayCount - 2 < summaryData.monthlyStats.totalActiveDays &&
-                        dayCount >= summaryData.monthlyStats.totalActiveDays;
-                      const isLastDot = isLastFilled || (i === arr.length - 1 && isFilled);
-                        if (isLastDot) {
-                          return (
-                            <div key={i} className="relative flex items-center justify-center" style={{zIndex:3}}>
-                              <MuiTooltip
-                                title={`${summaryData.monthlyStats.totalActiveDays} days`}
-                                placement="top"
-                                arrow
-                              >
-                                <div
-                                  className="w-3 h-3 rounded-full border-2 bg-white border-white shadow-[0_0_6px_2px_rgba(255,255,255,0.6)] cursor-pointer"
-                                ></div>
-                              </MuiTooltip>
-                            </div>
-                          );
-                        }
-                      return (
-                        <div
-                          key={i}
-                          className={`w-3 h-3 rounded-full border-2 ${
-                              isFilled
-                              ? 'bg-green-500 border-green-500'
-                              : 'bg-gray-700 border-gray-700'
-                            }`}
-                        ></div>
-                      );
-                    })}
-                  </div>
-                </div>
+              </div>
+              <div className="mt-1 text-[11px] text-white/60 flex justify-between">
+                <span>
+                  {summaryData.monthlyStats.totalActiveDays} / {getDaysInMonth(selectedMonth)} days
+                </span>
+                <span>
+                  {Math.round(
+                    (summaryData.monthlyStats.totalActiveDays / getDaysInMonth(selectedMonth)) * 100
+                  )}
+                  %
+                </span>
               </div>
             </div>
           </div>
-          <div className="mx-12 flex items-center">
-            <div className="w-2 h-32 bg-white/10 rounded-full"></div>
-          </div>
-          <div className="flex flex-col min-h-[220px] flex-1">
-            <FaDumbbell className="w-12 h-12 text-[#d62e49]" />
-              <div className="flex items-center justify-between text-lg text-gray-200 mb-1 mt-8">
+
+          {/* Muscle focus card */}
+          <div className="flex flex-col bg-[#111338] border border-white/5 rounded-2xl px-4 py-4 gap-3">
+            <div className="flex items-center gap-3">
+              <FaDumbbell className="w-6 h-6 text-[#d62e49]" />
+              <div className="text-xs uppercase tracking-wide text-white/60">
+                Muscle Focus
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-sm text-gray-200 mb-1 mt-1">
               {(() => {
                 const mostHit = getMostHitMuscles(summaryData.monthlyStats.mostFrequentMuscles);
                 const leastHit = getLeastHitMuscles(summaryData.monthlyStats.mostFrequentMuscles);
@@ -602,20 +599,26 @@ const WorkoutSummary = () => {
                 return (
                   <>
                     <Tooltip2 title={mostHitNames} arrow>
-                        <p className=" text-[16px] text-white/70 cursor-pointer max-w-[140px] truncate overflow-hidden whitespace-nowrap block">
-                          most hit <p className="font-bold text-xl text-white max-w-[140px] truncate overflow-hidden whitespace-nowrap">{mostHitNames || 'NA'}</p>
+                      <p className=" text-[11px] text-white/70 cursor-pointer max-w-[120px] truncate overflow-hidden whitespace-nowrap block">
+                        most hit
+                        <p className="font-bold text-sm text-white max-w-[120px] truncate overflow-hidden whitespace-nowrap">
+                          {mostHitNames || 'NA'}
+                        </p>
                       </p>
                     </Tooltip2>
                     <Tooltip2 title={leastHitNames} arrow>
-                        <p className=" text-[16px] text-white/70 cursor-pointer mr-8 max-w-[140px] truncate overflow-hidden whitespace-nowrap block">
-                          least hit  <p className="font-bold text-xl text-white max-w-[140px]  truncate overflow-hidden whitespace-nowrap">{leastHitNames || 'NA'}</p>
+                      <p className=" text-[11px] text-white/70 cursor-pointer mr-2 max-w-[120px] truncate overflow-hidden whitespace-nowrap block">
+                        least hit
+                        <p className="font-bold text-sm text-white max-w-[120px] truncate overflow-hidden whitespace-nowrap">
+                          {leastHitNames || 'NA'}
+                        </p>
                       </p>
                     </Tooltip2>
                   </>
                 );
               })()}
             </div>
-              <div className="w-full h-28 mt-2 flex items-start" style={{ marginLeft: '-4px' }}>
+            <div className="w-full h-24 mt-1 flex items-start" style={{ marginLeft: '-4px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   layout="vertical"
@@ -644,9 +647,9 @@ const WorkoutSummary = () => {
                   <YAxis
                     type="category"
                     dataKey="type"
-                    tick={{ fill: '#fff', fontWeight: 700, fontSize: 16 }}
-                    width={60}
-                    tickFormatter={t => t === 'Most' ? 'Most' : 'Least'}
+                    tick={{ fill: '#fff', fontWeight: 700, fontSize: 12 }}
+                    width={50}
+                    tickFormatter={t => (t === 'Most' ? 'Most' : 'Least')}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -655,8 +658,8 @@ const WorkoutSummary = () => {
                     cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                   />
                   <Bar dataKey="value" barSize={12} radius={[0, 16, 16, 0]}>
-                    <Cell fill="#22c55e" /> {/* Most: green */}
-                    <Cell fill="#d62e49" /> {/* Least: red */}
+                    <Cell fill="#22c55e" />
+                    <Cell fill="#d62e49" />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -677,7 +680,7 @@ const WorkoutSummary = () => {
           No workout data available for this month
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

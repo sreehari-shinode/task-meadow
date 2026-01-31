@@ -340,7 +340,7 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
 
                     <div className="mb-8">
                       <h2 className="text-2xl font-bold text-white mb-4">Personal Info</h2>
-                      <div className="grid grid-cols-4 gap-4 pl-12 font-sans">
+                      <div className="grid grid-cols-5 gap-4 pl-12 font-sans">
                         <div>
                           <label className="block text-sm font-medium text-gray-300">Age</label>
                           {isEditing ? (
@@ -402,6 +402,21 @@ const Profile = ({ isOpen, onClose, triggerPosition, onProfileUpdate }) => {
                             />
                           ) : (
                             <p className="text-lg text-white font-normal font-sans">{profileData.weight || 'Not set'} kg</p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300">Target Weight (kg)</label>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              name="targetWeight"
+                              value={profileData.targetWeight}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full text-white rounded-lg px-3 py-2 border-0 focus:outline-none focus:ring-0 font-normal font-sans bg-[#2a2f5c] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-ms-expand]:hidden [appearance:none] [-moz-appearance:none] [-webkit-appearance:none] bg-no-repeat"
+                              min="0"
+                            />
+                          ) : (
+                            <p className="text-lg text-white font-normal font-sans">{profileData.targetWeight || 'Not set'} kg</p>
                           )}
                         </div>
                       </div>

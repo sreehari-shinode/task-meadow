@@ -18,6 +18,11 @@ const workoutSchema = new mongoose.Schema({
     type: Number,  // in minutes
     required: true
   },
+  intensity: {
+    type: String,
+    enum: ['Low', 'Medium', 'High'],
+    default: 'Medium'
+  },
   cardio: {
     activity: {
       type: String,

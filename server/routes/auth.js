@@ -37,10 +37,6 @@ router.post('/register', async (req, res) => {
       password
     });
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-
     // Save user
     await user.save();
 
@@ -125,7 +121,8 @@ router.get('/profile', async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId).select('-password');
+    // token payload is { id: user._id } (see /login)
+    const user = await User.findById(decoded.id).select('-password');
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });

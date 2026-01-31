@@ -6,6 +6,12 @@ const path = require('path');
 const fs = require('fs');
 const workoutRoutes = require('./routes/workouts');
 const exerciseRoutes = require('./routes/exercises');
+const catRoutes = require('./routes/cat');
+const habitsRoutes = require('./routes/habits');
+const eventsRoutes = require('./routes/events');
+const analyticsRoutes = require('./routes/analytics');
+const todoListsRoutes = require('./routes/todoLists');
+const weightTrackingRoutes = require('./routes/weightTracking');
 
 // Load environment variables
 dotenv.config();
@@ -14,7 +20,7 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://task-meadow.vercel.app'],
+  origin: ['http://localhost:3000','http://localhost:3001', 'https://task-meadow.vercel.app'],
   credentials: true
 }));
 
@@ -49,6 +55,12 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/exercises', exerciseRoutes);
+app.use('/api/cat', catRoutes);
+app.use('/api/habits', habitsRoutes);
+app.use('/api/events', eventsRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/todo-lists', todoListsRoutes);
+app.use('/api/weight-tracking', weightTrackingRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
