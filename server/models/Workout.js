@@ -12,16 +12,16 @@ const workoutSchema = new mongoose.Schema({
   },
   musclesHit: [{
     type: String,
-    required: true
+    required: false  // Made optional for cardio-only workouts
   }],
   duration: {
     type: Number,  // in minutes
-    required: true
+    required: false  // Made optional for strength training
   },
   intensity: {
     type: String,
-    enum: ['Low', 'Medium', 'High'],
-    default: 'Medium'
+    enum: ['Low', 'Medium', 'High']
+    // Removed default value - should only be set after user selection
   },
   cardio: {
     activity: {

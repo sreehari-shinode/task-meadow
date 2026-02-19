@@ -336,7 +336,7 @@ router.post('/', auth, async (req, res) => {
     const startOfDay = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
     const endOfDay = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
 
-    const validIntensity = (intensity && ['Low', 'Medium', 'High'].includes(String(intensity).trim())) ? String(intensity).trim() : 'Medium';
+    const validIntensity = intensity && ['Low', 'Medium', 'High'].includes(String(intensity).trim()) ? String(intensity).trim() : null;
 
     let workout = await Workout.findOne({
       userId: req.user.id,

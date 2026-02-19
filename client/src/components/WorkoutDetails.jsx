@@ -12,7 +12,7 @@ const WorkoutDetails = ({ date }) => {
   const [formData, setFormData] = useState({
     musclesHit: [],
     duration: '',
-    intensity: 'Medium',
+    intensity: '',
     cardio: { activity: '', duration: '', distance: '' },
     personalRecords: [],
     additionalNotes: ''
@@ -44,7 +44,7 @@ const WorkoutDetails = ({ date }) => {
       setFormData({
         musclesHit: [],
         duration: '',
-        intensity: 'Medium',
+        intensity: '',
         cardio: { activity: '', duration: '', distance: '' },
         personalRecords: [],
         additionalNotes: '',
@@ -55,7 +55,7 @@ const WorkoutDetails = ({ date }) => {
       setFormData({
         musclesHit: data.musclesHit || [],
         duration: data.duration || '',
-        intensity: data.intensity || 'Medium',
+        intensity: data.intensity || '',
         cardio: data.cardio || { activity: '', duration: '', distance: '' },
         personalRecords: data.personalRecords || [],
         additionalNotes: data.additionalNotes || '',
@@ -83,7 +83,7 @@ useEffect(() => {
         date: formattedDate,
         musclesHit: formData.musclesHit,
         duration: formData.duration,
-        intensity: formData.intensity || 'Medium',
+        intensity: formData.intensity,
         cardio: cardioData,
         personalRecords: formData.personalRecords,
         additionalNotes: formData.additionalNotes
@@ -268,7 +268,7 @@ useEffect(() => {
                     </div>
                     <div className="w-24">
                       <div className="text-xs text-white/40 mb-1">Intensity</div>
-                      <div className="text-sm text-white font-medium">{workout?.intensity || 'Medium'}</div>
+                      <div className="text-sm text-white font-medium">{workout?.intensity || '-'}</div>
                     </div>
                   </div>
                 </div>
@@ -376,10 +376,11 @@ useEffect(() => {
                     <div>
                       <div className="text-xs text-white/60 mb-1">Intensity</div>
                       <select
-                        value={formData.intensity || 'Medium'}
+                        value={formData.intensity}
                         onChange={e => setFormData(prev => ({ ...prev, intensity: e.target.value }))}
                         className="w-full bg-white/5 border border-white/10 rounded text-white text-sm px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#d62e49]"
                       >
+                        <option value="" className="bg-[#1d2145]">Select intensity</option>
                         <option value="Low" className="bg-[#1d2145]">Low</option>
                         <option value="Medium" className="bg-[#1d2145]">Medium</option>
                         <option value="High" className="bg-[#1d2145]">High</option>
