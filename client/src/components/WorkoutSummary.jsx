@@ -53,7 +53,7 @@ const WeeklyAnalysis = ({ weeklyBreakdown }) => {
   // };
   const formatMinutes = (min) => {
     const hr = Math.floor(min / 60);
-    const mins = min % 60;
+    const mins = Math.round(min % 60);
     if (hr > 0 && mins > 0) return `${hr} hr ${mins} min`;
     if (hr > 0) return `${hr} hr`;
     return `${mins} min`;
@@ -274,7 +274,7 @@ const WorkoutSummary = () => {
     // Helper to format minutes as 'X hr Y min'
     const formatMinutes = (min) => {
       const hr = Math.floor(min / 60);
-      const mins = min % 60;
+      const mins = Math.round(min % 60);
       if (hr > 0 && mins > 0) return `${hr} hr ${mins} min`;
       if (hr > 0) return `${hr} hr`;
       return `${mins} min`;
