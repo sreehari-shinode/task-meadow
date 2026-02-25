@@ -98,11 +98,30 @@ const WeeklyHabits = () => {
 
   const weeklyStats = useMemo(() => {
     const perWeek = WEEK_SLOTS.map((weekIdx) => {
-      const totalPossible = habits.length || 1;
+      // Calculate goal distribution for this week
+      const weeklyGoalTotal = habits.reduce((sum, habit) => {
+        const monthlyGoal = habit.goal || 0;
+        if (monthlyGoal === 0) return sum;
+        
+        // Distribute monthly goal across weeks proportionally
+        const baseWeeklyGoal = Math.floor(monthlyGoal / WEEK_SLOTS.length);
+        const remainder = monthlyGoal % WEEK_SLOTS.length;
+        
+        // Add extra week to first few weeks if there's a remainder
+        let weeklyGoal = baseWeeklyGoal;
+        if (weekIdx <= remainder) {
+          weeklyGoal += 1;
+        }
+        
+        return sum + weeklyGoal;
+      }, 0);
+      
       const completed = habits.reduce(
         (sum, habit) => sum + (habit.checks[weekIdx - 1] ? 1 : 0),
         0
       );
+      
+      const totalPossible = weeklyGoalTotal || 1;
       const percent = Math.round((completed / totalPossible) * 100);
       return { week: weekIdx, completed, totalPossible, percent };
     });
@@ -125,16 +144,18 @@ const WeeklyHabits = () => {
     () =>
       habits.map((h) => {
         const completedWeeks = h.checks.filter(Boolean).length;
+        const goalWeeks = h.goal || 1;
         const percent = Math.round(
-          (completedWeeks / (WEEK_SLOTS.length || 1)) * 100
+          (completedWeeks / goalWeeks) * 100
         );
         return {
           name: h.name,
           completedWeeks,
+          goalWeeks,
           percent,
         };
       }),
-    [habits, WEEK_SLOTS.length]
+    [habits]
   );
 
   const saveWeeklyHabitsToApi = useCallback(
@@ -385,7 +406,7 @@ const WeeklyHabits = () => {
                 />
               </div>
               <div className="text-[10px] text-gray-500">
-                {week.completed}/{week.totalPossible} habits done
+                {week.completed}/{week.totalPossible} goal weeks
               </div>
             </div>
           ))}
@@ -534,7 +555,7 @@ const WeeklyHabits = () => {
                 <tr className="text-left border-b border-white/10 text-[10px] uppercase tracking-wider text-gray-400">
                   <th className="py-2 pr-3">Week</th>
                   <th className="py-2 px-3 text-right">Completed</th>
-                  <th className="py-2 px-3 text-right">Possible</th>
+                  <th className="py-2 px-3 text-right">Goal Weeks</th>
                   <th className="py-2 pl-3 text-right">% Done</th>
                 </tr>
               </thead>

@@ -107,12 +107,37 @@ const DailyHabits = () => {
       const start = (weekIdx - 1) * 7;
       const end = Math.min(start + 7, DAYS.length);
       const daysInWeek = end - start;
-      const totalPossible = habits.length * (daysInWeek || 1) || 1;
+      
+      // Calculate goal distribution for this week
+      const weeklyGoalTotal = habits.reduce((sum, habit) => {
+        const monthlyGoal = habit.goal || 0;
+        if (monthlyGoal === 0) return sum;
+        
+        // Distribute monthly goal across weeks proportionally to days in each week
+        const baseWeeklyGoal = Math.floor(monthlyGoal / WEEKS.length);
+        const remainder = monthlyGoal % WEEKS.length;
+        
+        // Add extra day to first few weeks if there's a remainder
+        let weeklyGoal = baseWeeklyGoal;
+        if (weekIdx <= remainder) {
+          weeklyGoal += 1;
+        }
+        
+        // Adjust for partial weeks (weeks with fewer than 7 days)
+        if (daysInWeek < 7) {
+          weeklyGoal = Math.round(weeklyGoal * (daysInWeek / 7));
+        }
+        
+        return sum + weeklyGoal;
+      }, 0);
+      
       const completed = habits.reduce(
         (sum, habit) =>
           sum + habit.checks.slice(start, end).filter(Boolean).length,
         0
       );
+      
+      const totalPossible = weeklyGoalTotal || 1;
       const percent = Math.round((completed / totalPossible) * 100);
       return { week: weekIdx, completed, totalPossible, percent };
     });
@@ -135,16 +160,18 @@ const DailyHabits = () => {
     () =>
       habits.map((h) => {
         const completedDays = h.checks.filter(Boolean).length;
+        const goalDays = h.goal || 1;
         const percent = Math.round(
-          (completedDays / (DAYS.length || 1)) * 100
+          (completedDays / goalDays) * 100
         );
         return {
           name: h.name,
           completedDays,
+          goalDays,
           percent,
         };
       }),
-    [habits, DAYS.length]
+    [habits]
   );
 
   const dateStrForDay = useCallback(
@@ -397,7 +424,7 @@ const DailyHabits = () => {
                 />
               </div>
               <div className="text-[10px] text-gray-500">
-                {week.completed}/{week.totalPossible} check-ins
+                {week.completed}/{week.totalPossible} goal days
               </div>
             </div>
           ))}
@@ -573,7 +600,7 @@ const DailyHabits = () => {
                 <tr className="text-left border-b border-white/10 text-[10px] uppercase tracking-wider text-gray-400">
                   <th className="py-2 pr-3">Week</th>
                   <th className="py-2 px-3 text-right">Completed</th>
-                  <th className="py-2 px-3 text-right">Possible</th>
+                  <th className="py-2 px-3 text-right">Goal Days</th>
                   <th className="py-2 pl-3 text-right">% Done</th>
                 </tr>
               </thead>
